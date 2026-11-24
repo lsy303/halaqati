@@ -85,6 +85,7 @@ form{display:flex;flex-direction:column;gap:10px}
 .ttabs button.on{background:var(--ad);color:#fff}
 .dot{position:absolute;top:4px;left:4px;background:var(--gold);color:#3B2340;font-size:11px;border-radius:9px;min-width:18px;height:18px;display:grid;place-items:center}
 .grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.av.emo{background:#FFF0F5;line-height:1;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
 .grid5 button{border:3px solid transparent;border-radius:50%;padding:0;background:none;aspect-ratio:1}
 .grid5 button.on{border-color:var(--ink)}
 .sw{border-radius:50%!important;aspect-ratio:1}
@@ -447,7 +448,9 @@ return`<div class="scroll"><table class="pt"><thead><tr><th>اليوم</th>${pl.
 ${pl.rows.map(r=>`<tr><th>${esc(r.day)}</th>${pl.cols.map(c=>{if(c.k==='t')return`<td>${esc(r.c[c.id]||'')}</td>`;if(!active(pl,r,c))return'<td class="muted">—</td>';const v=s&&s.done[r.id+':'+c.id];return`<td><button class="cb ${v||''}" ${live?`data-act="tick" data-id="${s.id}" data-k="${r.id}:${c.id}"`:'disabled'} aria-label="${esc(r.day)} ${esc(c.l)}">${v?I(P.check,16):''}</button></td>`}).join('')}</tr>`).join('')}
 </tbody></table></div>`;
 }
-const av=(s,sz)=>`<span class="av" style="width:${sz}px;height:${sz}px;background:${ICOL[s.icon]||'#E25C8F'}">${ICONS[s.icon]||ICONS.flower}</span>`;
+const EMO=/^(?:\p{Extended_Pictographic}|\p{Regional_Indicator})/u;
+const isEmo=i=>typeof i==='string'&&i.startsWith('emo:');
+const av=(s,sz)=>isEmo(s.icon)?`<span class="av emo" style="width:${sz}px;height:${sz}px;font-size:${typeof sz==='number'?Math.round(sz*.58)+'px':'2.4em'}">${esc(s.icon.slice(4))}</span>`:`<span class="av" style="width:${sz}px;height:${sz}px;background:${ICOL[s.icon]||'#E25C8F'}">${ICONS[s.icon]||ICONS.flower}</span>`;
 
 function applyTheme(){const t=THEMES[S.set.theme]||THEMES.rose,r=document.documentElement.style;const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=t[1];r.setProperty('--a',t[1]);r.setProperty('--ad',t[2]);r.setProperty('--as',t[3]);r.setProperty('--bg',t[4])}
 function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.append(d);setTimeout(()=>d.remove(),2200)}
@@ -613,7 +616,11 @@ modal(`<h2 style="font-size:22px">أهلًا ${esc(s.name)}</h2><p class="muted"
 V.after=then;
 }
 function iconPicker(s){
-modal(`<h2 style="font-size:22px">اختاري أيقونتكِ</h2><div class="grid5">${Object.keys(ICONS).map(k=>`<button class="${s.icon===k?'on':''}" data-act="set-icon" data-id="${s.id}" data-v="${k}" aria-label="${k}">${av({icon:k},'100%').replace('width:100%px;height:100%px','width:100%;height:100%')}</button>`).join('')}</div><button class="btn ghost" data-act="close">إغلاق</button>`);
+const QE=['🌸','🦋','🌷','🐰','🦄','🌙','⭐','🍓','🐱','🌈','🐼','🌻','🍭','🧸','🐥'];
+modal(`<h2 style="font-size:22px">اختاري صورتكِ</h2><div class="grid5">${Object.keys(ICONS).map(k=>`<button class="${s.icon===k?'on':''}" data-act="set-icon" data-id="${s.id}" data-v="${k}" aria-label="أيقونة">${av({icon:k},'100%').replace('width:100%px;height:100%px','width:100%;height:100%')}</button>`).join('')}</div>
+<h3 style="font-size:17px;margin-top:4px">أو إيموجي</h3><div class="grid5">${QE.map(e=>`<button class="${s.icon==='emo:'+e?'on':''}" data-act="set-icon" data-id="${s.id}" data-v="emo:${e}" aria-label="${e}">${av({icon:'emo:'+e},'100%').replace('width:100%px;height:100%px','width:100%;height:100%')}</button>`).join('')}</div>
+<form data-form="emoji" data-id="${s.id}" style="flex-direction:row;gap:8px;align-items:flex-end"><label style="flex:1">أو اكتبي أي إيموجي من لوحة مفاتيح جوالكِ<input name="e" maxlength="16" autocomplete="off" placeholder="😊" style="font-size:22px;text-align:center"></label><button class="btn" style="flex:none">اختيار</button></form>
+<button class="btn ghost" data-act="close">إغلاق</button>`);
 }
 document.addEventListener('click',e=>{
 const b=e.target.closest('[data-act]');if(!b)return;if(!S&&b.dataset.act!=='demo')return;const a=b.dataset.act,id=b.dataset.id,s=id&&stu(id);
@@ -690,6 +697,8 @@ const f=e.target,k=f.dataset.form;if(!k)return;e.preventDefault();const d=Object
 const h={
 tlogin(){if(d.pin===S.set.pin){V.teacher=true;V.ttab='prog'}else toast('الرمز غير صحيح')},
 create(){const o=blank(d);DB.ref('halaqat/'+HID).set(toDB(o)).then(()=>toast('أُنشئت الحلقة'));return 'skip'},
+emoji(){const x=stu(f.dataset.id),v=String(d.e||'').trim();const seg=window.Intl&&Intl.Segmenter?[...new Intl.Segmenter('ar',{granularity:'grapheme'}).segment(v)].map(q=>q.segment):[...v];const e=seg[0]||'';
+if(!e||!EMO.test(e))return toast('اختاري إيموجي فقط، بدون صور أو حروف'),'skip';x.icon='emo:'+e;save();closeM();render();toast('تم تغيير صورتكِ');return 'skip'},
 stucode(){const x=stu(f.dataset.id);if(d.code===x.code){V.me=x.id;try{localStorage.setItem('halaqati_me_'+HID,x.id)}catch(e){}closeM();toast('أهلًا '+x.name);const t=V.after;V.after=null;render();if(t)t();return 'skip'}toast('الرمز غير صحيح');return 'skip'},
 recite2(){const x=stu(f.dataset.id),k=f.dataset.k,v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0],dk=dkey(),ex=x.log.find(l=>l.k===k&&l.dk===dk);
 if(ex){addStars(x,rr[1]-ex.st);Object.assign(ex,{r:rr[0],st:rr[1],note:d.note||''})}else{x.log.push({ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||'',d:today(),dk,k});addStars(x,rr[1])}
