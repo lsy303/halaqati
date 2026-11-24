@@ -23,7 +23,9 @@ button{cursor:pointer}
 .hrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .hdr h1{font-size:28px}
 .hdr small{font-size:14px;opacity:.95;display:block}
-.logo{width:58px;height:58px;border-radius:20px;background:#fff;display:grid;place-items:center;color:var(--ad);flex:none}
+.logo{width:58px;height:58px;border-radius:20px;background:#fff;display:grid;place-items:center;color:var(--ad);flex:none;overflow:hidden}.logo img{width:100%;height:100%;object-fit:contain;padding:4px;box-sizing:border-box}
+.lgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.lgrid button{aspect-ratio:1;border:2.5px solid var(--as);border-radius:16px;background:#fff;display:grid;place-items:center;padding:6px}.lgrid button.on{border-color:var(--ad);box-shadow:0 0 0 2px var(--ad)}.lgrid svg{width:70%;height:70%}
+.upl{display:flex;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--ad);border-radius:16px;min-height:48px;font-weight:700;color:var(--ad);cursor:pointer}.upl input{position:absolute;width:1px;height:1px;opacity:0}
 .tk{margin-top:14px;background:rgba(255,255,255,.22);border-radius:16px;overflow:hidden;white-space:nowrap;padding:9px 0;font-weight:700;font-size:15px}
 .tk-track{display:inline-flex;gap:48px;padding-inline:24px;animation:tk var(--dur,40s) linear infinite}
 .tk-track span{display:inline-flex;align-items:center;gap:8px}
@@ -381,10 +383,11 @@ function toast(m){const d=document.createElement('div');d.className='toast';d.te
 function modal(h){document.getElementById('layer').innerHTML=`<div class="modal" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true">${h}</div></div>`}
 function closeM(){document.getElementById('layer').innerHTML=''}
 
+function logoHTML(){const l=S.set.logo||{};if(l.t==='img'&&l.d)return`<img src="${esc(l.d)}" alt="شعار الحلقة">`;const k=ICONS[l.k]?l.k:'flower';return`<span style="color:${ICOL[k]};display:grid">${ICONS[k].replace('<svg','<svg width="36" height="36"')}</span>`}
 function header(){
 const items=S.ticker.map(t=>`<span>${STAR}${esc(t)}</span>`).join('');
 const dur=Math.max(25,S.ticker.join('').length*0.28);
-return`<header class="hdr"><div class="hrow"><div><small>أهلًا بكنّ في</small><h1>${esc(S.set.halaqa)}</h1><small>المعلمة: ${esc(S.set.teacher)}</small></div><div class="logo">${ICONS.flower.replace('<svg','<svg width="34" height="34"')}</div></div>
+return`<header class="hdr"><div class="hrow"><div><small>أهلًا بكنّ في</small><h1>${esc(S.set.halaqa)}</h1><small>المعلمة: ${esc(S.set.teacher)}</small></div><div class="logo">${logoHTML()}</div></div>
 ${S.ticker.length?`<div class="tk" aria-label="عبارات تشجيعية"><div class="tk-track" style="--dur:${dur}s">${items}${items}</div></div>`:''}</header>`;
 }
 function home(){
@@ -414,7 +417,7 @@ return header()+`<main><h2 style="font-size:21px">المسابقات</h2>${S.com
 function student(){
 const s=stu(V.sid);if(!s)return home();const mine=V.me===s.id;
 const st={ok:['تمّ — اعتمدتها المعلمة','var(--mint)','var(--mintd)'],wait:['بانتظار اعتماد المعلمة','var(--sun)','var(--sund)']};
-return`<main style="padding-top:18px"><div class="hrow"><button class="back" data-act="nav" data-v="home">${I(P.back,18)}رجوع</button>${mine?'<span class="tag" style="background:var(--mint);color:var(--mintd)">صفحتي</span>':`<button class="btn ghost sm" data-act="login-stu" data-id="${s.id}">أنا ${esc(s.name)}</button>`}</div>
+return`<main style="padding-top:18px"><div class="hrow"><button class="back" data-act="nav" data-v="home">${I(P.back,18)}رجوع</button>${mine?'<button class="btn ghost sm" data-act="stu-logout">خروج</button>':`<button class="btn ghost sm" data-act="login-stu" data-id="${s.id}">أنا ${esc(s.name)}</button>`}</div>
 <section class="card" style="display:flex;align-items:center;gap:14px"><button data-act="pick-icon" data-id="${s.id}" aria-label="تغيير الأيقونة" style="border:0;background:none;padding:0;position:relative">${av(s,84)}<span style="position:absolute;bottom:0;left:0;background:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.15);color:var(--ad)">${I('M4 20h4L19 9l-4-4L4 16zM14 6l4 4',16)}</span></button>
 <div style="flex:1"><h1 style="font-size:28px">${esc(s.name)}</h1><div style="display:flex;align-items:baseline;gap:6px"><span class="big">${n(s.stars)}</span><span class="muted">نجمة · الترتيب ${n(ranked().indexOf(s)+1)}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><span class="tag" style="background:#FFF0C2;color:#7A4A00">رصيد اللعب ${n(bal(s))}★</span><button class="btn ghost sm" data-act="garden" data-id="${s.id}" style="min-height:32px">حديقة ${esc(s.name)}</button></div></div></section>
 ${s.notes.length?`<section class="list"><h2 style="font-size:18px">رسائل من المعلمة</h2>${s.notes.slice().reverse().map(x=>`<div class="note">${esc(x.t)}<small>${esc(x.d)}</small></div>`).join('')}</section>`:''}
@@ -482,7 +485,12 @@ if(V.ttab==='cheer')b=`<section class="card"><h2 style="font-size:20px;margin-bo
 if(V.ttab==='grades')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:10px">إضافة درجة</h2><form data-form="grade"><label>الطالبة<select name="sid">${opts}</select></label><label>الاختبار<input name="t" placeholder="مثال: اختبار جزء عمّ" required></label><div class="duo"><label>الدرجة<input name="s" type="number" min="0" step="0.5" required></label><label>من<input name="m" type="number" min="1" value="10" required></label></div><button class="btn">حفظ الدرجة</button></form></section>`;
 if(V.ttab==='comps')b=`${S.comps.map(c=>`<section class="card"><div class="ttl"><h2>${esc(c.title)}</h2><button class="btn ghost sm" data-act="del-comp" data-id="${c.id}">حذف</button></div><p class="muted" style="margin:0 0 8px">${esc(c.desc)} · الجائزة: ${esc(c.prize)}</p><label>الفائزة<select data-act-change="winner" data-id="${c.id}"><option value="">— لم تُحدَّد —</option>${S.students.map(s=>`<option value="${s.id}" ${c.winner===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label></section>`).join('')}
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">مسابقة جديدة</h2><form data-form="comp"><label>العنوان<input name="title" required></label><label>الوصف<input name="desc" required></label><div class="duo"><label>تنتهي<input name="ends" placeholder="الخميس" required></label><label>الجائزة<input name="prize" required></label></div><button class="btn">إضافة المسابقة</button></form></section>`;
-if(V.ttab==='set')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:10px">بيانات الحلقة</h2><form data-form="set"><label>اسم الحلقة<input name="halaqa" value="${esc(S.set.halaqa)}" required></label><label>اسم المعلمة<input name="teacher" value="${esc(S.set.teacher)}" required></label><label>رمز دخول المعلمة<input name="pin" value="${esc(S.set.pin)}" inputmode="numeric" required></label><button class="btn">حفظ</button></form></section>
+if(V.ttab==='set')b=`<section class="card"><div class="hrow"><div style="flex:1"><h2 style="font-size:20px">حماية صفحات الطالبات</h2><p class="muted" style="margin:4px 0 0">${S.set.lockStu===false?'مفتوحة: يرى الجميع درجات كل طالبة وخطتها.':'مفعّلة: لا تُفتح صفحة الطالبة إلا برمزها أو بدخول المعلمة.'}</p></div><button class="btn ${S.set.lockStu===false?'ghost':''} sm" data-act="lock-stu">${S.set.lockStu===false?'تفعيل':'مفعّلة ✓'}</button></div></section><section class="card"><h2 style="font-size:20px;margin-bottom:10px">بيانات الحلقة</h2><form data-form="set"><label>اسم الحلقة<input name="halaqa" value="${esc(S.set.halaqa)}" required></label><label>اسم المعلمة<input name="teacher" value="${esc(S.set.teacher)}" required></label><label>رمز دخول المعلمة<input name="pin" value="${esc(S.set.pin)}" inputmode="numeric" required></label><button class="btn">حفظ</button></form></section>
+<section class="card"><h2 style="font-size:20px;margin-bottom:10px">شعار الحلقة</h2>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="logo" style="width:72px;height:72px;box-shadow:0 0 0 2px var(--as)">${logoHTML()}</div><p class="muted" style="margin:0;flex:1">اختاري أيقونة جاهزة، أو ارفعي صورة شعار الحلقة من جهازكِ.</p></div>
+<div class="lgrid">${Object.keys(ICONS).map(k=>{const l=S.set.logo||{},on=l.t!=='img'&&(l.k||'flower')===k;return`<button class="${on?'on':''}" data-act="logo-icon" data-v="${k}" aria-label="أيقونة" style="color:${ICOL[k]}">${ICONS[k]}</button>`}).join('')}</div>
+<label class="upl" style="position:relative;margin-top:10px">${I(P.plus,18)}رفع صورة من الجهاز<input type="file" accept="image/*" id="logoFile"></label>
+${(S.set.logo||{}).t==='img'?'<button class="btn ghost" style="width:100%;margin-top:8px" data-act="logo-del">إزالة الصورة</button>':''}</section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">لون التطبيق</h2><div class="grid5">${Object.entries(THEMES).map(([k,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="sw ${S.set.theme===k?'on':''}" data-act="theme" data-v="${k}" style="background:${t[1]};width:100%" aria-label="${t[0]}"></button><span style="font-size:12px;font-weight:700">${t[0]}</span></div>`).join('')}</div></section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">الطالبات ورموزهنّ</h2><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:48px">${av(s,34)}<span class="nm">${esc(s.name)}</span><span class="tag" style="background:#fff">الرمز ${esc(s.code)}</span><button class="btn ghost sm" data-act="del-stu" data-id="${s.id}" aria-label="حذف الطالبة">${I(P.x,16)}</button></div>`).join('')}</div>
 <form data-form="addstu" style="margin-top:10px"><div class="duo"><label>اسم الطالبة<input name="name" required></label><label>رمزها<input name="code" inputmode="numeric" required></label></div><button class="btn ghost">إضافة طالبة</button></form></section>
@@ -513,7 +521,9 @@ if(a==='close-bg'){if(e.target===b)closeM();return}
 const go={
 close:closeM,
 nav(){V.view=b.dataset.v;window.scrollTo(0,0)},
-open(){V.sid=id;V.view='student';window.scrollTo(0,0)},
+open(){const go=()=>{V.sid=id;V.view='student';window.scrollTo(0,0);render()};if(S.set.lockStu!==false&&!V.teacher&&V.me!==id){askCode(s,go);return 'keep'}go();return 'keep'},
+'stu-logout'(){V.me=null;try{localStorage.removeItem('halaqati_me_'+HID)}catch(e){}V.view='home';toast('تم تسجيل الخروج')},
+'lock-stu'(){S.set.lockStu=S.set.lockStu===false;save();toast(S.set.lockStu?'صفحات الطالبات محمية بالرمز':'صفحات الطالبات مفتوحة للجميع')},
 'login-stu'(){askCode(s,()=>{})},
 'pick-icon'(){if(V.me!==id)return askCode(s,()=>iconPicker(s));iconPicker(s)},
 'set-icon'(){s.icon=b.dataset.v;save();closeM();toast('تم تغيير الأيقونة')},
@@ -523,6 +533,8 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan=JSON.parse(JSON.stringify(S.plan));save();toast('صُمّمت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+'logo-icon'(){S.set.logo={t:'icon',k:b.dataset.v};save();toast('تم تغيير الشعار')},
+'logo-del'(){S.set.logo={t:'icon',k:'flower'};save();toast('أُزيلت الصورة')},
 garden(){V.gid=id;V.view='garden';closeM();window.scrollTo(0,0)},
 plot(){const i=+b.dataset.i,go2=()=>{const p=gOf(s).plots[i];p?plantSheet(s,i):seedSheet(s,i)};if(V.me!==id){askCode(s,go2);return 'keep'}go2();return 'keep'},
 'buy-seed'(){const i=+b.dataset.i,k=b.dataset.v;if(!spend(s,SEEDS[k].p))return 'keep';gOf(s).plots[i]={t:k,st:0,w:0};save();closeM();toast('زُرعت '+SEEDS[k].n)},
@@ -556,6 +568,7 @@ if(go&&go()!=='keep')render();
 });
 const tp=()=>V.pfor==='all'?S.plan:stu(V.pfor).plan;
 document.addEventListener('change',e=>{const el=e.target,ed=el.dataset.ed;
+if(el.id==='logoFile'&&el.files&&el.files[0]){const f=el.files[0];if(!/^image\//.test(f.type))return toast('اختاري ملف صورة');const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const M=200,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);let d=c.toDataURL('image/png');if(d.length>90000)d=c.toDataURL('image/jpeg',.85);S.set.logo={t:'img',d};save();render();toast('رُفع الشعار')};im.onerror=()=>toast('تعذّر قراءة الصورة');im.src=rd.result};rd.readAsDataURL(f);return}
 if(ed){if(ed==='pfor'){V.pfor=el.value;return render()}
 const pl=tp();if(!pl)return;const col=pl.cols.find(c=>c.id===el.dataset.c),row=pl.rows.find(r=>r.id===el.dataset.r);
 if(ed==='ptitle')pl.title=el.value;if(ed==='col-l')col.l=el.value;if(ed==='row-day')row.day=el.value;if(ed==='cell')row.c[col.id]=el.value;if(ed==='col-k')col.k=el.value;
