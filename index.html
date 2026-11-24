@@ -132,6 +132,10 @@ form{display:flex;flex-direction:column;gap:10px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
 .row:disabled{opacity:.55}
+.colsbox{background:var(--bg);border-radius:18px;overflow:hidden}
+.colsbox summary{list-style:none;display:flex;align-items:center;gap:8px;padding:12px 14px;min-height:52px;cursor:pointer}
+.colsbox summary::-webkit-details-marker{display:none}
+.colsin{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--mut);margin-top:8px}.legend span{display:inline-flex;align-items:center;gap:4px}.legend i{width:14px;height:14px;border-radius:5px;border:2px solid var(--ad);display:inline-block}
 .ed{display:grid;grid-template-columns:minmax(0,1fr) 96px 44px;gap:6px;align-items:center}
 .ed input,.ed select{padding:8px 10px}
@@ -470,13 +474,13 @@ let ed='';
 if(tgt&&!pl)ed=`<p class="muted" style="margin:0">${esc(tgt.name)} تتبع خطة الحلقة حاليًا.</p><button class="btn" data-act="own-plan">تصميم خطة خاصة لها</button>`;
 else ed=`${tgt?`<button class="btn ghost sm" data-act="drop-plan">إلغاء الخطة الخاصة والعودة لخطة الحلقة</button>`:''}
 <label>عنوان الخطة<input data-ed="ptitle" value="${esc(pl.title)}"></label>
-<h3 style="font-size:17px;margin-top:6px">معاينة</h3><div id="pv">${planTable(null,pl,false)}</div>
-<h3 style="font-size:17px;margin-top:6px">أعمدة الجدول</h3><p class="muted" style="margin:0">«نص» تكتبين فيه السورة أو المقطع، و«تمام» مربع تؤشّر عليه الطالبة. كل عمود «تمام» يخصّ الأعمدة التي قبله.</p>
-<div class="list">${pl.cols.map(c=>`<div class="ed"><input data-ed="col-l" data-c="${c.id}" value="${esc(c.l)}" aria-label="اسم العمود"><select data-ed="col-k" data-c="${c.id}" aria-label="نوع العمود"><option value="t" ${c.k==='t'?'selected':''}>نص</option><option value="c" ${c.k==='c'?'selected':''}>تمام</option></select><button class="btn ghost sm" data-act="del-col" data-c="${c.id}" aria-label="حذف العمود">${I(P.x,16)}</button></div>`).join('')}</div>
-<div class="duo"><button class="btn ghost sm" data-act="add-col">إضافة عمود</button><button class="btn ghost sm" data-act="def-cols">القالب الافتراضي</button></div>
 <h3 style="font-size:17px;margin-top:6px">الأيام والمقاطع</h3>
 ${pl.rows.map(r=>`<div class="rowed"><div class="hrow"><input data-ed="row-day" data-r="${r.id}" value="${esc(r.day)}" aria-label="اليوم" style="font-weight:700"><button class="btn ghost sm" data-act="del-row" data-r="${r.id}" aria-label="حذف اليوم">${I(P.x,16)}</button></div><div class="cells">${pl.cols.filter(c=>c.k==='t').map(c=>`<input data-ed="cell" data-r="${r.id}" data-c="${c.id}" value="${esc(r.c[c.id]||'')}" placeholder="${esc(c.l)}" aria-label="${esc(c.l)}">`).join('')}</div></div>`).join('')}
-<button class="btn ghost" data-act="add-row">إضافة يوم</button>`;
+<button class="btn ghost" data-act="add-row">إضافة يوم</button>
+<h3 style="font-size:17px;margin-top:6px">معاينة</h3><div id="pv">${planTable(null,pl,false)}</div>
+<details class="colsbox" ${V.colsOpen?'open':''}><summary><span style="flex:1"><b>أعمدة الجدول</b><br><span class="muted">${pl.cols.map(c=>c.k==='c'?'✓':esc(c.l)).join(' · ')}</span></span><span class="tag" style="background:var(--as);color:var(--ad)">تعديل</span></summary><div class="colsin"><p class="muted" style="margin:0">«نص» تكتبين فيه السورة أو المقطع، و«تمام» مربع تؤشّر عليه الطالبة. كل عمود «تمام» يخصّ الأعمدة التي قبله.</p>
+<div class="list">${pl.cols.map(c=>`<div class="ed"><input data-ed="col-l" data-c="${c.id}" value="${esc(c.l)}" aria-label="اسم العمود"><select data-ed="col-k" data-c="${c.id}" aria-label="نوع العمود"><option value="t" ${c.k==='t'?'selected':''}>نص</option><option value="c" ${c.k==='c'?'selected':''}>تمام</option></select><button class="btn ghost sm" data-act="del-col" data-c="${c.id}" aria-label="حذف العمود">${I(P.x,16)}</button></div>`).join('')}</div>
+<div class="duo"><button class="btn ghost sm" data-act="add-col">إضافة عمود</button><button class="btn ghost sm" data-act="def-cols">القالب الافتراضي</button></div></div></details>`;
 b=`<section class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:20px">تصميم الخطة</h2>${sel}${ed}</section>
 <button class="btn ghost" data-act="newweek">بدء أسبوع جديد (تصفير التمام لجميع الطالبات)</button>`;}
 if(V.ttab==='cheer')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:10px">رسالة تشجيع لطالبة</h2><form data-form="note"><label>إلى<select name="sid"><option value="all">جميع الطالبات</option>${opts}</select></label>
@@ -605,6 +609,7 @@ addstu(){S.students.push({id:uid(),ord:Date.now(),name:d.name,code:d.code,icon:'
 }[k];
 if(h&&h()==='skip')return;save();render();
 });
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('colsbox'))V.colsOpen=e.target.open},true);
 document.addEventListener('focusout',()=>setTimeout(()=>{if(PEND&&!busy()){PEND=false;render()}},150));
 const _close=closeM;closeM=function(){_close();if(PEND){PEND=false;render()}};
 try{
