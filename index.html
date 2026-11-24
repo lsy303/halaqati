@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E25C8F">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="حلقتي">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>حلقتي</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@600;800&family=Tajawal:wght@400;500;700&display=swap">
 <style>
@@ -128,6 +136,11 @@ form{display:flex;flex-direction:column;gap:10px}
 .plot.empty{border:2.5px dashed #8CC97E;background:transparent;justify-content:center;color:#3E8A4F}
 .today{background:var(--bg);border-radius:18px;padding:12px;margin-top:12px}
 .who{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.who .off{filter:grayscale(1);opacity:.35}
+.ptypes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ptype{position:relative;display:block;font-weight:700}.ptype input{position:absolute;opacity:0;width:1px;height:1px}
+.ptype span{display:flex;flex-direction:column;align-items:center;gap:2px;border:2.5px solid var(--as);border-radius:16px;padding:6px;background:#F3FAFF;cursor:pointer}
+.ptype input:checked+span{border-color:var(--ad);box-shadow:0 0 0 2px var(--ad)}.ptype input:focus-visible+span{outline:3px solid var(--ad)}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.galc{display:flex;flex-direction:column;gap:2px;text-align:center}.galc b{font-size:14px}.galc .muted{font-size:12px}
 .ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
@@ -233,10 +246,59 @@ ${JUZ.map(g=>{const d=g.s.filter(x=>m.has(x)).length,all=d===g.s.length,open=d>0
 const SEEDS={rose:{n:'وردة',p:3,u:0,c:'#E2546B'},tulip:{n:'توليب',p:5,u:10,c:'#B36BD6'},sun:{n:'دوّار الشمس',p:8,u:25,c:'#F2B825'},jas:{n:'ياسمين',p:10,u:40,c:'#FFFFFF'},palm:{n:'نخلة',p:20,u:60,c:'#2FA58A'}};
 const DECOR={bfly:{n:'فراشات',p:6},bench:{n:'مقعد',p:10},lamp:{n:'فانوس',p:12},fount:{n:'نافورة',p:25}};
 const WPS=2,STG=['بذرة','برعم','مكتملة'];
-const BSTAGES=[['الأساس',40],['الجدران',100],['الباب والنوافذ',170],['القبة',250],['المئذنة',340],['الحديقة والزينة',450]];
+const PROJ={
+mosque:{n:'مسجد',def:'مسجد حلقتنا',st:['الأساس','الجدران','الباب والنوافذ','القبة','المئذنة','الحديقة'],verb:'يُبنى المسجد'},
+library:{f:1,n:'مكتبة',def:'مكتبة الحلقة',st:['الأرضية','الرفوف','الكتب','المصابيح','السجادة','اللوحة'],verb:'تُجهَّز المكتبة'},
+garden:{n:'بستان',def:'بستان الحلقة',st:['التربة','البذور','الشجيرات','الأزهار','النخيل','النافورة'],verb:'يُزرع البستان'},
+school:{f:1,n:'دار تحفيظ',def:'دار التحفيظ',st:['الأساس','الفصول','السبورة','المصاحف','اللافتة','الساحة'],verb:'تُبنى دار التحفيظ'}};
+const FR=[.09,.22,.38,.56,.76,1];
+const bGoal=()=>Math.max(6,+S.build.goal||450);
+const bStages=()=>{const p=PROJ[S.build.type]||PROJ.mosque,g=bGoal();return p.st.map((x,i)=>[x,Math.round(g*FR[i])])};
+function projSVG(type,k){
+const on=i=>k>i,st=i=>on(i)?'':' style="fill:none;stroke:#C9B8C4;stroke-width:2;stroke-dasharray:5 4"',acc=i=>on(i)?' style="fill:var(--a)"':'';
+let b='';
+if(type==='library'){
+b=`<rect x="30" y="180" width="260" height="16" rx="3" fill="#C9A27A"${st(0)}/>
+<rect x="46" y="62" width="96" height="118" rx="4" fill="#B07A45"${st(1)}/><rect x="178" y="62" width="96" height="118" rx="4" fill="#B07A45"${st(1)}/>
+${on(1)?[96,128,160].map(y=>`<rect x="50" y="${y}" width="88" height="5" fill="#8B5E34"/><rect x="182" y="${y}" width="88" height="5" fill="#8B5E34"/>`).join(''):''}
+${[[56,74],[182,74],[56,106],[182,106],[56,138],[182,138]].map(([x,y],j)=>Array.from({length:7},(_,i)=>`<rect x="${x+i*11.5}" y="${y+(i%3)}" width="9" height="${20-(i%3)}" rx="1.5" fill="${['#E2546B','#3A92D6','#F2B825','#2FA58A','#B36BD6','#F08A5D','#7B6BD6'][(i+j)%7]}"${st(2)}/>`).join('')).join('')}
+${[94,226].map(x=>`<path d="M${x} 0v20" stroke="${on(3)?'#8B5E34':'#C9B8C4'}" stroke-width="2"/><path d="M${x-12} 34l5-14h14l5 14z" fill="#F2B825"${st(3)}/>${on(3)?`<ellipse cx="${x}" cy="40" rx="16" ry="5" fill="#FFF3C4" opacity=".8"/>`:''}`).join('')}
+<ellipse cx="160" cy="191" rx="76" ry="7"${acc(4)}${st(4)}/>
+<rect x="120" y="18" width="80" height="30" rx="8"${acc(5)}${st(5)}/>${on(5)?'<path d="M140 33h40M146 26h28M146 40h28" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>':''}`;}
+else if(type==='garden'){
+b=`<rect x="14" y="176" width="292" height="20" rx="6" fill="#9C6B3C"${st(0)}/>
+${[50,90,130,190,230,270].map(x=>`<path d="M${x} 176v-8" stroke="${on(1)?'#3E9B4F':'#C9B8C4'}" stroke-width="3"/><path d="M${x} 170c-5-1-7-5-6-8 4 0 6 3 6 8zM${x} 170c5-1 7-5 6-8-4 0-6 3-6 8z" fill="#57B86A"${st(1)}/>`).join('')}
+${[70,120,200,250].map(x=>`<circle cx="${x}" cy="160" r="20" fill="#57B86A"${st(2)}/>`).join('')}
+${[[62,148],[80,156],[112,146],[128,158],[194,150],[210,158],[242,146],[258,156]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="5" fill="${['#E2546B','#F2B825','#B36BD6','#F08A5D'][i%4]}"${st(3)}/>`).join('')}
+${[26,294].map(x=>`<path d="M${x} 176Q${x-3} 120 ${x} 70" stroke="#8B5E34" stroke-width="6" fill="${on(4)?'none':'none'}"${on(4)?'':' stroke-dasharray="5 4" style="stroke:#C9B8C4"'}/>${[[-28,8],[-20,-8],[0,-14],[20,-8],[28,8]].map(([dx,dy])=>`<path d="M${x} 70q${dx/2} -10 ${dx} ${dy}" stroke="${on(4)?'#2FA58A':'#C9B8C4'}" stroke-width="5" fill="none" stroke-linecap="round"${on(4)?'':' stroke-dasharray="4 3"'}/>`).join('')}`).join('')}
+<ellipse cx="160" cy="120" rx="34" ry="9" fill="#7FB7E0"${st(5)}/><rect x="154" y="84" width="12" height="36" fill="#B8C7D6"${st(5)}/>${on(5)?'<path d="M160 84c-12-16-24-8-24 4M160 84c12-16 24-8 24 4" stroke="#7FB7E0" stroke-width="3" fill="none"/>':''}`;}
+else if(type==='school'){
+b=`<rect x="34" y="180" width="252" height="16" rx="3" fill="#C9A27A"${st(0)}/>
+<rect x="56" y="92" width="208" height="88" fill="#F6E7D0" stroke="#D9C2A0"${st(1)}/>${on(1)?'<path d="M48 92h224l-12-16H60z" fill="#C9A27A"/>':''}
+${[74,226].map(x=>`<rect x="${x}" y="110" width="22" height="22" rx="3" fill="#7FB7E0"${st(1)}/>`).join('')}
+<rect x="128" y="104" width="64" height="38" rx="3" fill="#2F5D50"${st(2)}/>${on(2)?'<path d="M138 116h30M138 126h44" stroke="#fff" stroke-width="2" stroke-linecap="round"/>':''}
+${[100,220].map(x=>`<path d="M${x-14} 178l14-12 14 12z" fill="#8B5E34"${st(3)}/><path d="M${x-12} 166c4-4 8-4 12 0 4-4 8-4 12 0v-10c-4-4-8-4-12 0-4-4-8-4-12 0z"${acc(3)}${st(3)}/>`).join('')}
+<rect x="104" y="48" width="112" height="24" rx="7"${acc(4)}${st(4)}/>${on(4)?'<path d="M124 60h72" stroke="#fff" stroke-width="3" stroke-linecap="round"/>':''}
+${on(5)?'<circle cx="22" cy="172" r="15" fill="#57B86A"/><rect x="20" y="178" width="4" height="18" fill="#8B5E34"/><circle cx="298" cy="172" r="15" fill="#57B86A"/><rect x="296" y="178" width="4" height="18" fill="#8B5E34"/><rect x="0" y="196" width="320" height="14" fill="#CDEFC4"/>':'<circle cx="22" cy="172" r="15"'+st(5)+'/><circle cx="298" cy="172" r="15"'+st(5)+'/>'}`;}
+else{
+b=`<rect x="0" y="196" width="320" height="14" rx="4" fill="#CDEFC4"/>
+<rect x="40" y="180" width="240" height="16" rx="3" fill="#C9A27A"${st(0)}/>
+<rect x="62" y="110" width="196" height="70" fill="#F6E7D0" stroke="#D9C2A0"${st(1)}/>
+<path d="M146 180v-34a14 14 0 0 1 28 0v34z" fill="#8B5E34"${st(2)}/><path d="M88 150v-16a9 9 0 0 1 18 0v16zM214 150v-16a9 9 0 0 1 18 0v16z" fill="#7FB7E0"${st(2)}/>
+<path d="M112 110a48 48 0 0 1 96 0z"${acc(3)}${st(3)}/><path d="M160 62v-10" stroke="${on(3)?'#D4A017':'#C9B8C4'}" stroke-width="2"/><path d="M164 44a6 6 0 1 0 0 8 4.5 4.5 0 1 1 0-8z" fill="${on(3)?'#D4A017':'none'}" stroke="${on(3)?'none':'#C9B8C4'}"/>
+<rect x="266" y="62" width="22" height="118" fill="#F6E7D0" stroke="#D9C2A0"${st(4)}/><path d="M262 62l15-26 15 26z"${acc(4)}${st(4)}/><rect x="264" y="92" width="26" height="6" fill="#D9C2A0"${st(4)}/>
+${on(5)?'<circle cx="26" cy="176" r="16" fill="#57B86A"/><rect x="24" y="182" width="4" height="14" fill="#8B5E34"/><circle cx="304" cy="182" r="12" fill="#57B86A"/><circle cx="120" cy="192" r="4" fill="#E2546B"/><circle cx="200" cy="192" r="4" fill="#F2B825"/><circle cx="135" cy="193" r="3.5" fill="#B36BD6"/><circle cx="186" cy="193" r="3.5" fill="#E2546B"/>':'<circle cx="26" cy="176" r="16"'+st(5)+'/><circle cx="304" cy="182" r="12"'+st(5)+'/>'}`;}
+return`<svg viewBox="0 0 320 210" width="100%" role="img" aria-label="${(PROJ[type]||PROJ.mosque).n}: ${n(k)} من ٦ مراحل">${b}</svg>`;
+}
+function projCelebrate(){if(V.view!=='games'||document.querySelector('#layer .modal'))return;const b=S.build;if(bTotal()<bGoal())return;const key='halaqati_bc_'+HID+'_'+(b.id||'p');try{if(localStorage.getItem(key))return;localStorage.setItem(key,'1')}catch(e){return}
+const top=Object.entries(b.by||{}).filter(([id,a])=>stu(id)&&a>0).sort((x,y)=>y[1]-x[1]).slice(0,3).map(([id])=>stu(id).name);
+modal(`<div class="cele" aria-hidden="true">${Array.from({length:16},(_,i)=>`<i style="left:${(i*6.5+2)%100}%;animation-delay:${(i%6)*.2}s;background:${HPAL[i%HPAL.length]}"></i>`).join('')}</div>
+<div style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center"><div style="width:100%;background:#F3FAFF;border-radius:18px;padding:6px">${projSVG(b.type,6)}</div>
+<h2 style="font-size:24px">ما شاء الله! ${(PROJ[b.type]||{}).f?'اكتملت':'اكتمل'} «${esc(b.name)}»</h2><p style="margin:0;font-weight:700">بجهود جميع طالبات الحلقة 🌸</p>${top.length?`<p class="muted" style="margin:0">أكثر المساهِمات: ${top.map(esc).join('، ')}</p>`:''}
+${b.reward?`<div class="note" style="font-weight:700">مكافأة الحلقة: ${esc(b.reward)}</div>`:''}</div><button class="btn" data-act="close">الحمد لله</button>`)}
 const dkey=()=>new Date().toISOString().slice(0,10);
 const sumv=o=>Object.values(o||{}).reduce((a,b)=>a+(+b||0),0);
-const bTotal=()=>Math.max(0,sumv(S.build.by)+Object.values(S.build.days||{}).reduce((a,d)=>a+(+d.bonus||0),0));
+const bTotal=()=>Math.max(0,(+S.build.carry||0)+sumv(S.build.by)+Object.values(S.build.days||{}).reduce((a,d)=>a+(+d.bonus||0),0));
 const dayOf=k=>{const b=S.build;b.days=b.days||{};return b.days[k]||(b.days[k]={by:{},bonus:0})};
 function addStars(s,d){const b=S.build,k=dkey(),t=dayOf(k);t.by=t.by||{};b.by=b.by||{};
 s.stars=(s.stars||0)+d;b.by[s.id]=(b.by[s.id]||0)+d;t.by[s.id]=(t.by[s.id]||0)+d;
@@ -263,18 +325,7 @@ bench:'<rect x="5" y="14" width="30" height="6" rx="2" fill="#B07A45"/><rect x="
 lamp:'<path d="M14 10h12l3 6v14a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V16z" fill="#F2B825"/><rect x="15" y="17" width="10" height="11" rx="2" fill="#FFF3C4"/><path d="M20 3v7" stroke="#8B5E34" stroke-width="2"/>',
 fount:'<ellipse cx="20" cy="32" rx="16" ry="5" fill="#7FB7E0"/><rect x="17" y="14" width="6" height="18" fill="#B8C7D6"/><path d="M20 14c-6-8-12-4-12 2M20 14c6-8 12-4 12 2" stroke="#7FB7E0" stroke-width="2.5" fill="none"/>'}[k];
 return`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">${d}</svg>`}
-function mosqueSVG(tot){
-const k=BSTAGES.filter(x=>tot>=x[1]).length,on=i=>k>i;
-const st=i=>on(i)?'':' fill="none" stroke="#C9B8C4" stroke-width="2" stroke-dasharray="5 4"';
-return`<svg viewBox="0 0 320 210" width="100%" role="img" aria-label="مراحل البناء المكتملة ${n(k)} من ${n(BSTAGES.length)}">
-<rect x="0" y="196" width="320" height="14" rx="4" fill="#CDEFC4"/>
-<rect x="40" y="180" width="240" height="16" rx="3" fill="#C9A27A"${st(0)}/>
-<rect x="62" y="110" width="196" height="70" fill="#F6E7D0" stroke="#D9C2A0"${st(1)}/>
-<path d="M146 180v-34a14 14 0 0 1 28 0v34z" fill="#8B5E34"${st(2)}/><path d="M88 150v-16a9 9 0 0 1 18 0v16zM214 150v-16a9 9 0 0 1 18 0v16z" fill="#7FB7E0"${st(2)}/>
-<path d="M112 110a48 48 0 0 1 96 0z" style="${on(3)?'fill:var(--a)':''}"${st(3)}/><path d="M160 62v-10" stroke="${on(3)?'#D4A017':'#C9B8C4'}" stroke-width="2"/><path d="M164 44a6 6 0 1 0 0 8 4.5 4.5 0 1 1 0-8z" fill="${on(3)?'#D4A017':'none'}" stroke="${on(3)?'none':'#C9B8C4'}"/>
-<rect x="266" y="62" width="22" height="118" fill="#F6E7D0" stroke="#D9C2A0"${st(4)}/><path d="M262 62l15-26 15 26z" style="${on(4)?'fill:var(--a)':''}"${st(4)}/><rect x="264" y="92" width="26" height="6" fill="#D9C2A0"${st(4)}/>
-${on(5)?'<circle cx="26" cy="176" r="16" fill="#57B86A"/><rect x="24" y="182" width="4" height="14" fill="#8B5E34"/><circle cx="304" cy="182" r="12" fill="#57B86A"/><circle cx="120" cy="192" r="4" fill="#E2546B"/><circle cx="200" cy="192" r="4" fill="#F2B825"/><circle cx="135" cy="193" r="3.5" fill="#B36BD6"/><circle cx="186" cy="193" r="3.5" fill="#E2546B"/>':'<circle cx="26" cy="176" r="16"'+st(5)+'/><circle cx="304" cy="182" r="12"'+st(5)+'/>'}
-</svg>`}
+
 const GPOS=[[50,284],[128,290],[236,290],[312,284],[64,226],[132,230],[230,230],[298,226],[84,172],[140,174],[222,174],[278,172]];
 function decorG(k,x,y,s){return`<g transform="translate(${x-20*s} ${y-40*s}) scale(${s})">${decorSVG(k).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`}
 function gardenScene(s,mine){
@@ -299,19 +350,20 @@ ${g.decor.includes('bfly')?decorG('bfly',112,128,.7)+decorG('bfly',262,186,.6):'
 </svg>`;
 }
 function games(){
-const b=S.build,TOT=bTotal(),k=BSTAGES.filter(x=>TOT>=x[1]).length,done=k===BSTAGES.length,next=BSTAGES[k],prev=k?BSTAGES[k-1][1]:0;
+const b=S.build,TOT=bTotal(),BS=bStages(),k=BS.filter(x=>TOT>=x[1]).length,done=k===BS.length,next=BS[k],prev=k?BS[k-1][1]:0,PJ=PROJ[b.type]||PROJ.mosque;
 const top=Object.entries(b.by||{}).filter(([id,a])=>stu(id)&&a>0).sort((x,y)=>y[1]-x[1]).slice(0,5);
 return header()+`<main>
-<section class="card"><div class="ttl"><h2>${esc(b.name)}</h2><span>بناء الحلقة</span></div>
-<div style="background:#F3FAFF;border-radius:18px;padding:8px">${mosqueSVG(TOT)}</div>
-${done?`<div class="note" style="text-align:center;font-weight:700;margin-top:10px">اكتمل البناء! مكافأة الحلقة: ${esc(b.reward)}</div>`:`<div class="hrow" style="margin-top:10px"><b>المرحلة: ${esc(next[0])}</b><span class="muted">${n(TOT)} / ${n(next[1])} نجمة</span></div><div class="bar" style="background:var(--as);margin-top:6px"><div style="width:${Math.min(100,(TOT-prev)/(next[1]-prev)*100).toFixed(0)}%;background:var(--ad)"></div></div><p class="muted" style="margin:8px 0 0">عند اكتمال البناء: ${esc(b.reward)}</p>`}
-<div class="seg" style="margin-top:10px">${BSTAGES.map((x,i)=>`<span class="tag" style="background:${i<k?'var(--mint)':'var(--bg)'};color:${i<k?'var(--mintd)':'var(--mut)'}">${i<k?'✓ ':''}${x[0]}</span>`).join('')}</div>
+<section class="card"><div class="ttl"><h2>${esc(b.name)}</h2><span>مشروع الحلقة: ${PJ.n}</span></div>
+<div style="background:#F3FAFF;border-radius:18px;padding:8px">${projSVG(b.type,k)}</div>
+${done?`<div class="note" style="text-align:center;font-weight:700;margin-top:10px">اكتمل المشروع! مكافأة الحلقة: ${esc(b.reward)}</div><p class="muted" style="text-align:center;margin:6px 0 0">بانتظار أن تختار المعلمة المشروع التالي.</p>`:`<div class="hrow" style="margin-top:10px"><b>المرحلة: ${esc(next[0])}</b><span class="muted">${n(TOT)} / ${n(next[1])} نجمة</span></div><div class="bar" style="background:var(--as);margin-top:6px"><div style="width:${Math.min(100,(TOT-prev)/(next[1]-prev)*100).toFixed(0)}%;background:var(--ad)"></div></div><p class="muted" style="margin:8px 0 0">المشروع كاملًا: ${n(bGoal())} نجمة${b.reward?' · المكافأة: '+esc(b.reward):''}</p>`}
+<div class="seg" style="margin-top:10px">${BS.map((x,i)=>`<span class="tag" style="background:${i<k?'var(--mint)':'var(--bg)'};color:${i<k?'var(--mintd)':'var(--mut)'}">${i<k?'✓ ':''}${x[0]}</span>`).join('')}</div>
 ${(()=>{const t=(b.days||{})[dkey()]||{by:{},bonus:0},tb=t.by||{},c=S.students.filter(x=>(tb[x.id]||0)>0).length;t.n=sumv(tb);return`<div class="today"><div class="hrow"><b>إنجاز الحلقة اليوم</b><span class="st">${n(Math.max(0,t.n))}${STAR}</span></div>
 <div class="who">${S.students.map(x=>`<span class="${(tb[x.id]||0)>0?'':'off'}" title="${esc(x.name)}">${av(x,30)}</span>`).join('')}</div>
-<p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.bonus?'var(--mintd)':'var(--ink)'}">${t.bonus?`ما شاء الله! شاركت جميع الطالبات اليوم، وأُضيفت ${n(b.bonusN)} نجوم للبناء`:`شاركت ${n(c)} من ${n(S.students.length)} طالبات — إذا شاركت الجميع اليوم تُضاف ${n(b.bonusN)} نجوم إضافية`}</p></div>`})()}
-<p class="muted" style="margin:8px 0 0">يُبنى المسجد تلقائيًا من مجموع نجوم الحلقة كل يوم: كل نجمة تجمعها أي طالبة من التسميع أو الخطة تضيف لبنة.</p>
-${top.length?`<h3 style="font-size:16px;margin:14px 0 6px">أكثر المساهِمات في البناء</h3><div class="list">${top.map(([id,a])=>`<div class="row" style="background:var(--bg);min-height:46px">${av(stu(id),32)}<span class="nm">${esc(stu(id).name)}</span><span class="st">${n(a)}${STAR}</span></div>`).join('')}</div>`:''}
+<p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.bonus?'var(--mintd)':'var(--ink)'}">${t.bonus?`ما شاء الله! شاركت جميع الطالبات اليوم، وأُضيفت ${n(b.bonusN)} نجوم للمشروع`:`شاركت ${n(c)} من ${n(S.students.length)} طالبات — إذا شاركت الجميع اليوم تُضاف ${n(b.bonusN)} نجوم إضافية`}</p></div>`})()}
+<p class="muted" style="margin:8px 0 0">${PJ.verb} تلقائيًا من مجموع نجوم الحلقة كل يوم: كل نجمة تجمعها أي طالبة من التسميع أو الخطة تقرّبنا من الاكتمال.</p>
+${top.length?`<h3 style="font-size:16px;margin:14px 0 6px">أكثر المساهِمات في المشروع</h3><div class="list">${top.map(([id,a])=>`<div class="row" style="background:var(--bg);min-height:46px">${av(stu(id),32)}<span class="nm">${esc(stu(id).name)}</span><span class="st">${n(a)}${STAR}</span></div>`).join('')}</div>`:''}
 </section>
+${(S.gallery||[]).length?`<section class="card"><div class="ttl"><h2>إنجازات الحلقة</h2><span>${n(S.gallery.length)} مشروع</span></div><div class="gal">${S.gallery.slice().reverse().map(g=>`<div class="galc"><div style="background:#F3FAFF;border-radius:14px;padding:4px">${projSVG(g.type,6)}</div><b>${esc(g.name)}</b><span class="muted">${esc(g.date)}</span></div>`).join('')}</div></section>`:''}
 <section class="card"><div class="ttl"><h2>حدائق الطالبات</h2><span>ازرعي بنجومكِ</span></div><div class="ggrid">
 ${S.students.map(s=>{const g=gOf(s),f=g.plots.filter(p=>p&&p.st===2).length;return`<button class="gcard" data-act="garden" data-id="${s.id}">${av(s,40)}<b>${esc(s.name)}</b><span class="muted">${n(f)} زهرة</span></button>`}).join('')}
 </div></section></main>`;
@@ -331,7 +383,7 @@ function plantSheet(s,i){const p=gOf(s).plots[i];modal(`<div style="display:flex
 ${p.st<2?`<button class="btn" data-act="water" data-id="${s.id}" data-i="${i}">اسقيها (١★)</button>`:'<div class="note" style="text-align:center;font-weight:700">ما شاء الله! اكتمل نموّها</div>'}
 <button class="btn ghost" data-act="uproot" data-id="${s.id}" data-i="${i}">إزالة النبتة</button><button class="btn ghost" data-act="close">إغلاق</button>`)}
 function decorSheet(s){const g=gOf(s);modal(`<h2 style="font-size:22px">زينة الحديقة</h2><p class="muted" style="margin:0">رصيدكِ ${n(bal(s))}★</p><div class="list">${Object.entries(DECOR).map(([k,x])=>{const own=g.decor.includes(k);return`<button class="row" style="background:var(--bg)" data-act="buy-decor" data-id="${s.id}" data-v="${k}" ${own?'disabled':''}>${decorSVG(k)}<span class="nm">${x.n}</span><span class="st">${own?'موجودة':n(x.p)+STAR}</span></button>`}).join('')}</div><button class="btn ghost" data-act="close">إغلاق</button>`)}
-function blank(d){return{set:{halaqa:d.halaqa,teacher:d.teacher,theme:'rose',pin:d.pin},ticker:['«خيركم من تعلّم القرآن وعلّمه» — رواه البخاري','«الماهر بالقرآن مع السفرة الكرام البررة» — متفق عليه'],phrases:['ما شاء الله، أحسنتِ!','تلاوة متقنة، بارك الله فيكِ','أنتِ قدوة لزميلاتكِ','واصلي، أنتِ على الطريق الصحيح'],plan:defPlan(),build:{name:'مسجد حلقتنا',reward:'رحلة ترفيهية للحلقة',bonusN:10,by:{},days:{}},comps:[],students:[]}}
+function blank(d){return{set:{halaqa:d.halaqa,teacher:d.teacher,theme:'rose',pin:d.pin},ticker:['«خيركم من تعلّم القرآن وعلّمه» — رواه البخاري','«الماهر بالقرآن مع السفرة الكرام البررة» — متفق عليه'],phrases:['ما شاء الله، أحسنتِ!','تلاوة متقنة، بارك الله فيكِ','أنتِ قدوة لزميلاتكِ','واصلي، أنتِ على الطريق الصحيح'],plan:defPlan(),build:{id:'p1',type:'mosque',goal:450,name:'مسجد حلقتنا',reward:'رحلة ترفيهية للحلقة',bonusN:10,by:{},days:{}},comps:[],students:[]}}
 function seed(){
 const names=['ريم','جنى','لين','مريم','سارة','نورة','هيا','دانة','شهد','رزان'];
 const ic=Object.keys(ICONS);const stars=[45,38,32,29,27,24,22,19,17,14];
@@ -340,7 +392,7 @@ set:{halaqa:'حلقة نور القرآن',teacher:'أ. هدى',theme:'rose',pin
 ticker:['«خيركم من تعلّم القرآن وعلّمه» — رواه البخاري','كل آية تحفظينها نورٌ في قلبكِ','«الماهر بالقرآن مع السفرة الكرام البررة» — متفق عليه','بطلات حلقتنا، نفخر بكنّ!','«اقرؤوا القرآن فإنه يأتي يوم القيامة شفيعًا لأصحابه» — رواه مسلم'],
 phrases:['ما شاء الله، أحسنتِ!','تلاوة متقنة، بارك الله فيكِ','أنتِ قدوة لزميلاتكِ','واصلي، أنتِ على الطريق الصحيح','فخورة بالتزامكِ هذا الأسبوع'],
 plan:defPlan(),
-build:{name:'مسجد حلقتنا',reward:'رحلة ترفيهية للحلقة',bonusN:10,by:{s0:25,s1:20,s2:18,s3:15,s4:12,s5:10,s6:8,s7:6,s8:4,s9:2},days:{[dkey()]:{by:{s0:3,s1:2,s2:2,s3:2,s4:2,s5:2,s6:1},bonus:0}}},
+build:{id:'p1',type:'mosque',goal:450,name:'مسجد حلقتنا',reward:'رحلة ترفيهية للحلقة',bonusN:10,by:{s0:25,s1:20,s2:18,s3:15,s4:12,s5:10,s6:8,s7:6,s8:4,s9:2},days:{[dkey()]:{by:{s0:3,s1:2,s2:2,s3:2,s4:2,s5:2,s6:1},bonus:0}}},
 comps:[{id:'c1',title:'تحدّي الالتزام',desc:'أتمّي جميع بنود خطة الأسبوع قبل يوم الخميس',ends:'الخميس',prize:'شهادة تميّز و٥ نجوم',winner:null}],
 students:names.map((nm,i)=>({id:'s'+i,ord:i,name:nm,icon:ic[i],code:String(1001+i),stars:stars[i],
 spent:[30,22,16,12,8,8,6,4,4,2][i],garden:i===0?{size:6,plots:[{t:'rose',st:2,w:0},{t:'tulip',st:2,w:0},{t:'sun',st:1,w:1},{t:'rose',st:2,w:0}],decor:['bfly','bench']}:i===1?{size:6,plots:[{t:'rose',st:2,w:0},{t:'tulip',st:1,w:0},{t:'rose',st:0,w:1}],decor:['bfly']}:i===2?{size:6,plots:[{t:'rose',st:1,w:1},{t:'rose',st:0,w:0}],decor:[]}:null,mem:[1,...Array.from({length:Math.max(3,30-i*3)},(_,k)=>114-k)],plan:null,done:i<3?{'r1:a3':'ok','r1:b3':'ok','r2:a3':'ok','r2:b3':'ok'}:i<6?{'r1:a3':'ok','r1:b3':'ok'}:{'r1:a3':'ok'},
@@ -348,18 +400,18 @@ grades:i<5?[{t:'اختبار سورة عبس',s:10-i%3,m:10}]:[],
 notes:i===0?[{t:'ما شاء الله يا ريم، تلاوتكِ جميلة ومتقنة، واصلي!',d:today()}]:[],
 log:[{ty:'حفظ',pt:'النبأ ١–١٠',r:'ممتاز',st:3,d:today()}]}))};
 }
-const HID=((new URLSearchParams(location.search).get('h')||'main').toLowerCase().replace(/[^a-z0-9_-]/g,'')||'main');
+const HID=((new URLSearchParams(location.search).get('h')||(()=>{try{return localStorage.getItem('halaqati_last')}catch(e){}})()||'main').toLowerCase().replace(/[^a-z0-9_-]/g,'')||'main');
 const arr=x=>Array.isArray(x)?x.filter(v=>v!=null):x&&typeof x==='object'?Object.keys(x).sort((a,b)=>a-b).map(k=>x[k]).filter(v=>v!=null):[];
-function norm(v){if(!v||!v.set)return null;const o={set:v.set,ticker:arr(v.ticker),phrases:arr(v.phrases),plan:v.plan||defPlan(),comps:arr(v.comps),build:v.build||{},students:[]};
+function norm(v){if(!v||!v.set)return null;const o={set:v.set,ticker:arr(v.ticker),phrases:arr(v.phrases),plan:v.plan||defPlan(),comps:arr(v.comps),gallery:arr(v.gallery),build:v.build||{},students:[]};
 o.plan.cols=arr(o.plan.cols);o.plan.rows=arr(o.plan.rows).map(r=>({...r,c:r.c||{}}));
-const b=o.build;b.name=b.name||'مسجد حلقتنا';b.reward=b.reward||'';b.bonusN=b.bonusN==null?10:+b.bonusN;b.by=b.by||{};b.days=b.days||{};Object.values(b.days).forEach(d=>{d.by=d.by||{};d.bonus=+d.bonus||0});
+const b=o.build;b.type=PROJ[b.type]?b.type:'mosque';b.goal=+b.goal||450;b.id=b.id||'p1';b.carry=+b.carry||0;b.name=b.name||PROJ[b.type].def;b.reward=b.reward||'';b.bonusN=b.bonusN==null?10:+b.bonusN;b.by=b.by||{};b.days=b.days||{};Object.values(b.days).forEach(d=>{d.by=d.by||{};d.bonus=+d.bonus||0});
 o.students=Object.entries(v.students||{}).map(([id,s])=>{const p=s.plan?{...s.plan,cols:arr(s.plan.cols),rows:arr(s.plan.rows).map(r=>({...r,c:r.c||{}}))}:null;
 const g=s.garden?{size:s.garden.size||6,decor:arr(s.garden.decor),plots:Array.from({length:s.garden.size||6},(_,i)=>(s.garden.plots||{})[i]||null)}:null;
 return{...s,id,stars:+s.stars||0,spent:+s.spent||0,plan:p,garden:g,mem:arr(s.mem),done:s.done||{},grades:arr(s.grades),notes:arr(s.notes),log:arr(s.log)}}).sort((a,b)=>(a.ord||0)-(b.ord||0));
 return o}
 function flat(o){const m={},put=(p,v)=>{m[p]=JSON.stringify(v===undefined?null:v)};
-['set','ticker','phrases','plan','comps'].forEach(k=>put(k,o[k]));
-const b=o.build;['name','reward','bonusN'].forEach(k=>put('build/'+k,b[k]));Object.entries(b.days||{}).forEach(([d,x])=>put('build/days/'+d+'/bonus',x.bonus||0));
+['set','ticker','phrases','plan','comps','gallery'].forEach(k=>put(k,o[k]));
+const b=o.build;['name','reward','bonusN','type','goal','id','carry'].forEach(k=>put('build/'+k,b[k]));Object.entries(b.days||{}).forEach(([d,x])=>put('build/days/'+d+'/bonus',x.bonus||0));
 o.students.forEach(s=>Object.entries(s).forEach(([k,v])=>{if(k!=='id'&&k!=='stars')put('students/'+s.id+'/'+k,v)}));return m}
 let S=null,LAST={},INC=[],RAW=[],DB=null,PEND=false,FERR='';
 function save(){if(!DB||!S)return;const cur=flat(S),u={};
@@ -386,7 +438,7 @@ ${pl.rows.map(r=>`<tr><th>${esc(r.day)}</th>${pl.cols.map(c=>{if(c.k==='t')retur
 }
 const av=(s,sz)=>`<span class="av" style="width:${sz}px;height:${sz}px;background:${ICOL[s.icon]||'#E25C8F'}">${ICONS[s.icon]||ICONS.flower}</span>`;
 
-function applyTheme(){const t=THEMES[S.set.theme]||THEMES.rose,r=document.documentElement.style;r.setProperty('--a',t[1]);r.setProperty('--ad',t[2]);r.setProperty('--as',t[3]);r.setProperty('--bg',t[4])}
+function applyTheme(){const t=THEMES[S.set.theme]||THEMES.rose,r=document.documentElement.style;const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=t[1];r.setProperty('--a',t[1]);r.setProperty('--ad',t[2]);r.setProperty('--as',t[3]);r.setProperty('--bg',t[4])}
 function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.append(d);setTimeout(()=>d.remove(),2200)}
 function modal(h){document.getElementById('layer').innerHTML=`<div class="modal" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true">${h}</div></div>`}
 function closeM(){document.getElementById('layer').innerHTML=''}
@@ -447,8 +499,11 @@ if(!V.teacher)return`<main style="padding-top:40px"><section class="card"><h2 st
 const tabs=[['prog','الإنجاز'],['recite','التسميع'],['plan','الخطة'],['games','الألعاب والمسابقات'],['cheer','التشجيع'],['set','الإعدادات']];if(!tabs.some(t=>t[0]===V.ttab))V.ttab='prog';
 const opts=S.students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
 let b='';
-if(V.ttab==='games')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:10px">بناء الحلقة</h2><p class="muted" style="margin:0 0 8px">مجموع البناء: ${n(bTotal())} نجمة</p><form data-form="buildset"><label>اسم المشروع<input name="name" value="${esc(S.build.name)}" required></label><label>المكافأة عند الاكتمال<input name="reward" value="${esc(S.build.reward)}" required></label><label>نجوم إضافية عند مشاركة جميع الطالبات في اليوم<input name="bonusN" type="number" min="0" value="${S.build.bonusN}" required></label><button class="btn">حفظ</button></form><button class="btn ghost" style="width:100%;margin-top:10px" data-act="build-reset">بدء مشروع جديد (تصفير البناء)</button></section>
-<section class="card"><h2 style="font-size:20px;margin-bottom:8px">أرصدة اللعب</h2><p class="muted" style="margin:0 0 8px">رصيد الحديقة = مجموع النجوم − ما صرفته الطالبة. أما بناء المسجد فيتقدّم تلقائيًا من نجوم الحلقة ولا يُخصم من أرصدة الطالبات.</p><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:46px">${av(s,32)}<span class="nm">${esc(s.name)}</span><span class="muted">صرفت ${n(s.spent||0)}</span><span class="st">${n(bal(s))}${STAR}</span></div>`).join('')}</div></section>`;
+if(V.ttab==='games')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:6px">مشروع الحلقة الحالي</h2><p class="muted" style="margin:0 0 8px">${esc(S.build.name)} — ${n(bTotal())} من ${n(bGoal())} نجمة${bTotal()>=bGoal()?' · مكتمل ✓':''}</p>
+<form data-form="buildset"><div class="ptypes">${Object.entries(PROJ).map(([k,p])=>`<label class="ptype"><input type="radio" name="type" value="${k}" ${(S.build.type||'mosque')===k?'checked':''}><span>${projSVG(k,6)}<b>${p.n}</b></span></label>`).join('')}</div>
+<label>اسم المشروع<input name="name" value="${esc(S.build.name)}" required></label><label>عدد النجوم للمشروع كاملًا<input name="goal" type="number" min="6" step="1" value="${bGoal()}" required></label><label>المكافأة عند الاكتمال<input name="reward" value="${esc(S.build.reward||'')}"></label><label>نجوم إضافية عند مشاركة جميع الطالبات في اليوم<input name="bonusN" type="number" min="0" value="${S.build.bonusN}" required></label><button class="btn">حفظ</button></form>
+<button class="btn ghost" style="width:100%;margin-top:10px" data-act="new-proj">${bTotal()>=bGoal()?'بدء المشروع التالي':'إنهاء المشروع وبدء مشروع جديد'}</button></section>
+<section class="card"><h2 style="font-size:20px;margin-bottom:8px">أرصدة اللعب</h2><p class="muted" style="margin:0 0 8px">رصيد الحديقة = مجموع النجوم − ما صرفته الطالبة. أما مشروع الحلقة فيتقدّم تلقائيًا من نجوم الحلقة ولا يُخصم من أرصدة الطالبات.</p><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:46px">${av(s,32)}<span class="nm">${esc(s.name)}</span><span class="muted">صرفت ${n(s.spent||0)}</span><span class="st">${n(bal(s))}${STAR}</span></div>`).join('')}</div></section>`;
 if(V.ttab==='prog'){
 const days=S.plan.rows.map(r=>r.day);const maxR=Math.max(days.length,...S.students.map(s=>planOf(s).rows.length));
 const gl=groups(S.plan).filter(g=>g.some(c=>c.k==='c')).map(g=>{const t=g.filter(c=>c.k==='t');return t.length?t[t.length-1].l:'التمام'});
@@ -498,6 +553,7 @@ if(V.ttab==='set')b=`<section class="card"><div class="hrow"><div style="flex:1"
 <label class="upl" style="position:relative;margin-top:10px">${I(P.plus,18)}رفع صورة من الجهاز<input type="file" accept="image/*" id="logoFile"></label>
 ${(S.set.logo||{}).t==='img'?'<button class="btn ghost" style="width:100%;margin-top:8px" data-act="logo-del">إزالة الصورة</button>':''}</section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">لون التطبيق</h2><div class="grid5">${Object.entries(THEMES).map(([k,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="sw ${S.set.theme===k?'on':''}" data-act="theme" data-v="${k}" style="background:${t[1]};width:100%" aria-label="${t[0]}"></button><span style="font-size:12px;font-weight:700">${t[0]}</span></div>`).join('')}</div></section>
+<section class="card"><div class="hrow"><div style="flex:1"><h2 style="font-size:20px">تصفير النجوم</h2><p class="muted" style="margin:4px 0 0">لبداية فصل أو شهر جديد.</p></div><button class="btn ghost sm" data-act="reset-stars">تصفير</button></div></section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">الطالبات ورموزهنّ</h2><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:48px">${av(s,34)}<span class="nm">${esc(s.name)}</span><span class="tag" style="background:#fff">الرمز ${esc(s.code)}</span><button class="btn ghost sm" data-act="del-stu" data-id="${s.id}" aria-label="حذف الطالبة">${I(P.x,16)}</button></div>`).join('')}</div>
 <form data-form="addstu" style="margin-top:10px"><div class="duo"><label>اسم الطالبة<input name="name" required></label><label>رمزها<input name="code" inputmode="numeric" required></label></div><button class="btn ghost">إضافة طالبة</button></form></section>
 <button class="btn ghost" data-act="tlogout">تسجيل خروج المعلمة</button>`;
@@ -521,7 +577,7 @@ applyTheme();
 const v=V.view,map={home,honor,comps,student,teacher,games,garden};
 const nav=[['home','الرئيسية',P.home],['honor','الشرف',P.trophy],['games','الألعاب',P.sprout],['comps','المسابقات',P.flag],['teacher','المعلمة',P.lock]];
 document.getElementById('app').innerHTML=(map[v]||home)()+`<nav class="tabs">${nav.map(([k,l,d])=>`<button class="${v===k||(v==='student'&&k==='home')||(v==='garden'&&k==='games')?'on':''}" data-act="nav" data-v="${k}">${I(d)}<span>${l}</span></button>`).join('')}</nav>`;
-fitHeart();setTimeout(celebrate,250);
+fitHeart();setTimeout(celebrate,250);setTimeout(projCelebrate,300);
 }
 function askCode(s,then){
 modal(`<h2 style="font-size:22px">أهلًا ${esc(s.name)}</h2><p class="muted" style="margin:0">أدخلي رمزكِ الذي أعطتكِ إياه المعلمة.</p><form data-form="stucode" data-id="${s.id}"><label>الرمز<input name="code" type="password" inputmode="numeric" autocomplete="off" required autofocus></label><button class="btn">دخول</button></form><button class="btn ghost" data-act="close">إلغاء</button>`);
@@ -548,6 +604,11 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan=JSON.parse(JSON.stringify(S.plan));save();toast('صُمّمت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+'reset-stars'(){modal(`<h2 style="font-size:22px">تصفير النجوم</h2><label>لمن؟<select id="rsWho"><option value="all">جميع الطالبات</option>${S.students.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
+<p class="muted" style="margin:0">تعود النجوم ورصيد اللعب إلى صفر، ويتغيّر ترتيب لوحة الشرف. أما الحدائق والقلب وسجل التسميع وبناء المسجد فتبقى كما هي.</p>
+<button class="btn" style="background:#B3261E" data-act="reset-stars-ok">نعم، صفّري النجوم</button><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
+'reset-stars-ok'(){const w=(document.getElementById('rsWho')||{}).value||'all',list=w==='all'?S.students:S.students.filter(x=>x.id===w);
+list.forEach(x=>{x.stars=0;x.spent=0;RAW.push(['students/'+x.id+'/stars',0])});save();closeM();toast(w==='all'?'صُفّرت نجوم جميع الطالبات':'صُفّرت نجوم '+list[0].name)},
 'logo-icon'(){S.set.logo={t:'icon',k:b.dataset.v};save();toast('تم تغيير الشعار')},
 'logo-del'(){S.set.logo={t:'icon',k:'flower'};save();toast('أُزيلت الصورة')},
 garden(){V.gid=id;V.view='garden';closeM();window.scrollTo(0,0)},
@@ -558,7 +619,9 @@ uproot(){gOf(s).plots[+b.dataset.i]=null;save();closeM()},
 'decor-shop'(){decorSheet(s);return 'keep'},
 'buy-decor'(){const k=b.dataset.v;if(!spend(s,DECOR[k].p))return 'keep';gOf(s).decor.push(k);save();closeM();toast('أُضيفت '+DECOR[k].n)},
 expand(){const g=gOf(s);if(g.size>=12)return;if(!spend(s,12))return 'keep';g.size+=3;save();toast('اتّسعت الحديقة')},
-'build-reset'(){S.build.by={};S.build.days={};RAW.push(['build/by',null],['build/days',null]);save();toast('بدأ مشروع بناء جديد')},
+'new-proj'(){const done=bTotal()>=bGoal();modal(`<h2 style="font-size:22px">${done?'المشروع التالي':'مشروع جديد'}</h2>${done?'<p class="muted" style="margin:0">سيُحفظ المشروع المكتمل في «إنجازات الحلقة»، والنجوم الزائدة تنتقل إلى المشروع الجديد.</p>':'<p class="muted" style="margin:0">المشروع الحالي لم يكتمل، وسيُلغى تقدّمه ولن يُحفظ في الإنجازات.</p>'}
+<form data-form="newproj"><div class="ptypes">${Object.entries(PROJ).map(([k,p],i)=>`<label class="ptype"><input type="radio" name="type" value="${k}" ${i===0?'checked':''}><span>${projSVG(k,6)}<b>${p.n}</b></span></label>`).join('')}</div>
+<label>اسم المشروع (اختياري)<input name="name" placeholder="يُسمّى تلقائيًا حسب النوع"></label><label>عدد النجوم للمشروع كاملًا<input name="goal" type="number" min="6" value="${bGoal()}" required></label><label>المكافأة عند الاكتمال<input name="reward"></label><button class="btn">بدء المشروع</button></form><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
 heart(){const k=+b.dataset.n,nm=SURAHS[k-1];if(V.teacher){const i=s.mem.indexOf(k);if(i>-1){s.mem.splice(i,1);toast('أُزيل لون سورة '+nm)}else{s.mem.push(k);toast('تلوّنت سورة '+nm)}save();return}
 const el=document.getElementById('hinfo');if(el)el.textContent='سورة '+nm+(s.mem.includes(k)?' — محفوظة كاملة، أحسنتِ!':' — لم تكتمل بعد');return 'keep'},
 'drop-plan'(){stu(V.pfor).plan=null;save();toast('عادت الطالبة إلى خطة الحلقة')},
@@ -602,7 +665,9 @@ addph(){S.phrases.push(d.t)},
 grade(){s.grades.push({t:d.t,s:+d.s,m:+d.m});toast('حُفظت الدرجة')},
 comp(){S.comps.push({id:uid(),...d,winner:null});toast('أُضيفت المسابقة')},
 set(){Object.assign(S.set,{halaqa:d.halaqa,teacher:d.teacher,pin:d.pin});toast('حُفظت الإعدادات')},
-buildset(){S.build.name=d.name;S.build.reward=d.reward;S.build.bonusN=+d.bonusN||0;toast('حُفظ')},
+newproj(){const b=S.build,tot=bTotal(),g=bGoal(),done=tot>=g;if(done){S.gallery=S.gallery||[];S.gallery.push({type:b.type||'mosque',name:b.name,date:new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'}),goal:g})}
+const t=d.type||'mosque';S.build={id:uid(),type:t,name:d.name||PROJ[t].def,reward:d.reward||'',goal:Math.max(6,+d.goal||450),bonusN:b.bonusN==null?10:b.bonusN,carry:done?tot-g:0,by:{},days:{}};RAW.push(['build/by',null],['build/days',null]);closeM();toast('بدأ مشروع «'+S.build.name+'»')},
+buildset(){const ot=S.build.type;S.build.type=d.type||'mosque';S.build.name=d.name;S.build.reward=d.reward||'';S.build.goal=Math.max(6,+d.goal||450);S.build.bonusN=+d.bonusN||0;if(ot!==S.build.type&&(!d.name||d.name===(PROJ[ot]||{}).def))S.build.name=PROJ[S.build.type].def;toast('حُفظ')},
 addstu(){S.students.push({id:uid(),ord:Date.now(),name:d.name,code:d.code,icon:'flower',stars:0,spent:0,garden:null,mem:[],done:{},grades:[],notes:[],log:[]})}
 }[k];
 if(h&&h()==='skip')return;save();render();
@@ -613,7 +678,8 @@ const _close=closeM;closeM=function(){_close();if(PEND){PEND=false;render()}};
 try{
 if(!window.firebase||!firebaseConfig.apiKey||firebaseConfig.apiKey.startsWith('ضع'))throw new Error('cfg');
 firebase.initializeApp(firebaseConfig);DB=firebase.database();
-try{V.me=localStorage.getItem('halaqati_me_'+HID)||null}catch(e){}
+try{V.me=localStorage.getItem('halaqati_me_'+HID)||null;localStorage.setItem('halaqati_last',HID)}catch(e){}
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 boot('<p class="muted">جارٍ تحميل الحلقة…</p>');
 DB.ref('halaqat/'+HID).on('value',snap=>{const o=norm(snap.val());if(!o){S=null;setup();return}
 S=o;LAST=flat(S);if(V.me&&!stu(V.me))V.me=null;if(busy())PEND=true;else render()},err=>boot('<p style="font-weight:700">تعذّر الوصول إلى البيانات</p><p class="muted">تحقّقي من قواعد الأمان في Firebase.</p>'));
