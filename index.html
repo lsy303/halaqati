@@ -160,6 +160,7 @@ form{display:flex;flex-direction:column;gap:10px}
 .ph{flex:none;width:150px;height:150px;border:0;padding:0;border-radius:16px;overflow:hidden;position:relative;scroll-snap-align:start;background:var(--bg)}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}.ph span{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:12px;font-weight:700;padding:14px 8px 6px;text-align:start}
 .phgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.phi{display:flex;flex-direction:column;gap:6px}.phi img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px}.phi input{padding:8px;font-size:14px}
+.lgact{display:flex;gap:4px;justify-content:flex-end;margin-top:4px}.lgact .btn{min-height:34px;padding:0 8px}
 .ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
@@ -514,7 +515,7 @@ ${plans(s).map(({pl,px,t},pi)=>`<section class="card"><div class="ttl"><h2>${pi?
 ${planTable(s,pl,true,px)}${pi===plans(s).length-1?`
 <div class="legend"><span><i></i>لم يتم</span><span><i style="background:var(--mintd);border-color:var(--mintd)"></i>تمّ (+١ نجمة)</span></div>
 <p class="muted" style="margin:8px 0 0">${mine?'اضغطي على مربع «التمام» عند الإنجاز، وتظهر متابعتكِ عند المعلمة.':'لتسجيل الإنجاز اضغطي «أنا '+esc(s.name)+'» وأدخلي رمزكِ.'}</p>`:''}</section>`).join('')}
-<section class="card"><div class="ttl"><h2>سجل التسميع</h2></div>${s.log.length?`<table class="tbl">${s.log.slice().reverse().map(l=>`<tr><td>${esc(l.ty)}: ${esc(l.pt)}${l.note?`<br><span style="color:var(--ad);font-weight:700">${esc(l.note)}</span>`:''}<br><span class="muted">${esc(l.d)}</span></td><td>${esc(l.r)} · ${n(l.st)}★</td></tr>`).join('')}</table>`:'<p class="muted" style="margin:0">لا يوجد تسميع بعد.</p>'}</section>
+<section class="card"><div class="ttl"><h2>سجل التسميع</h2></div>${s.log.length?`<table class="tbl">${s.log.map((l,li)=>[l,li]).reverse().map(([l,li])=>`<tr><td>${esc(l.ty)}: ${esc(l.pt)}${l.note?`<br><span style="color:var(--ad);font-weight:700">${esc(l.note)}</span>`:''}<br><span class="muted">${esc(l.d)}</span></td><td>${esc(l.r)} · ${n(l.st)}★${V.teacher?`<div class="lgact"><button class="btn ghost sm" data-act="log-edit" data-id="${s.id}" data-i="${li}" aria-label="تعديل">${I('M4 20h4L19 9l-4-4L4 16zM14 6l4 4',15)}</button><button class="btn ghost sm" data-act="log-del" data-id="${s.id}" data-i="${li}" aria-label="حذف">${I(P.x,15)}</button></div>`:''}</td></tr>`).join('')}</table>`:'<p class="muted" style="margin:0">لا يوجد تسميع بعد.</p>'}</section>
 <section class="card"><div class="ttl"><h2>قرآني في قلبي</h2><span>${n(s.mem.length)} من ١١٤ سورة</span></div>
 <div class="bar" style="background:var(--as);margin-bottom:10px"><div style="width:${(s.mem.length/114*100).toFixed(1)}%;background:var(--ad)"></div></div>
 ${s.mem.length===114?'<div class="note" style="text-align:center;font-weight:700;margin-bottom:8px">ما شاء الله! اكتمل قلبكِ بالقرآن كاملًا</div>':''}
@@ -668,6 +669,11 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan={title:'خطة '+t.name+' الخاصة',cols:defCols(),rows:hDays().map(i=>({id:uid(),day:WDN[i],c:{}}))};save();toast('أُنشئت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+'log-edit'(){const i=+b.dataset.i,l=s.log[i];if(!l)return 'keep';modal(`<h2 style="font-size:22px">تعديل التسميع</h2><form data-form="logedit" data-id="${s.id}" data-i="${i}"><label>النوع<input name="ty" value="${esc(l.ty)}" required></label><label>المقطع<input name="pt" value="${esc(l.pt)}" required></label>
+<div class="rchips">${RATES.map(([rr,v])=>`<label><input type="radio" name="rate" value="${v}" ${l.st===v?'checked':''}><span>${rr}<small>${v?n(v)+'★':'—'}</small></span></label>`).join('')}</div>
+<label>ملاحظة المعلمة<input name="note" value="${esc(l.note||'')}"></label><button class="btn">حفظ التعديل</button></form><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
+'log-del'(){const i=+b.dataset.i,l=s.log[i];if(!l)return 'keep';modal(`<h2 style="font-size:22px">حذف التسميع؟</h2><p style="margin:0">${esc(l.ty)}: ${esc(l.pt)} — ${esc(l.r)}</p><p class="muted" style="margin:0">${l.st?'ستُخصم '+n(l.st)+' نجوم من '+esc(s.name)+'.':''}</p><button class="btn" style="background:#B3261E" data-act="log-del-ok" data-id="${s.id}" data-i="${i}">نعم، احذفيه</button><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
+'log-del-ok'(){const i=+b.dataset.i,l=s.log[i];if(l){if(l.st)addStars(s,-l.st);s.log.splice(i,1);save()}closeM();toast('حُذف التسميع')},
 photo(){photoView(+b.dataset.i);return 'keep'},
 'ph-del'(){if(DB)DB.ref('photos/'+HID+'/'+b.dataset.v).set(null);toast('حُذفت الصورة');return 'keep'},
 'comp-info'(){const x=S.comps.find(q=>q.id===b.dataset.v);if(!x)return 'keep';const w=x.winner&&stu(x.winner);modal(`<div style="display:flex;align-items:center;gap:10px;color:var(--sund)">${I(P.trophy,28)}<h2 style="font-size:22px;color:var(--ink)">${esc(x.title)}</h2></div><p style="margin:0;font-size:17px">${esc(x.desc||'')}</p><p class="muted" style="margin:0">تنتهي: ${esc(x.ends||'')}${x.prize?' · الجائزة: '+esc(x.prize):''}</p>${w?`<div class="row" style="background:var(--sun)">${av(w,40)}<span class="nm">الفائزة: ${esc(w.name)}</span></div>`:''}<button class="btn ghost" data-act="close">إغلاق</button>`);return 'keep'},
@@ -742,6 +748,7 @@ if(S.students.some(y=>y.id!==x.id&&String(y.code)===cd)){toast('هذا الرم�
 x.name=nm;x.code=cd;try{if(localStorage.getItem('halaqati_me_'+HID)===x.id&&V.me!==x.id)localStorage.removeItem('halaqati_me_'+HID)}catch(e){}closeM();toast('حُفظت بيانات '+nm)},
 gate(){if(String(d.g||'').trim()===String(S.set.gate||'').trim()){try{localStorage.setItem('halaqati_gate_'+HID,String(S.set.gate).trim())}catch(e){}render();toast('أهلًا بكِ')}else toast('الرمز غير صحيح');return 'skip'},
 gateset(){const v=String(d.gate||'').trim();S.set.gate=v;try{if(v)localStorage.setItem('halaqati_gate_'+HID,v)}catch(e){}toast(v?'فُعّل رمز الحلقة':'أُلغي رمز الحلقة')},
+logedit(){const x=stu(f.dataset.id),l=x&&x.log[+f.dataset.i];if(!l){closeM();return 'skip'}const v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0];if(rr[1]!==l.st)addStars(x,rr[1]-l.st);Object.assign(l,{ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||''});closeM();toast('حُفظ التعديل')},
 stucode(){const x=stu(f.dataset.id);if(d.code===x.code){V.me=x.id;try{localStorage.setItem('halaqati_me_'+HID,x.id)}catch(e){}closeM();toast('أهلًا '+x.name);const t=V.after;V.after=null;render();if(t)t();return 'skip'}toast('الرمز غير صحيح');return 'skip'},
 recite2(){const x=stu(f.dataset.id),k=f.dataset.k,v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0],dk=dkey(),ex=x.log.find(l=>l.k===k&&l.dk===dk);
 if(ex){addStars(x,rr[1]-ex.st);Object.assign(ex,{r:rr[0],st:rr[1],note:d.note||''})}else{x.log.push({ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||'',d:today(),dk,k});addStars(x,rr[1])}
