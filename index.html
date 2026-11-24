@@ -655,9 +655,11 @@ hday(){const i=+b.dataset.v;let d=hDays();d=d.includes(i)?d.filter(x=>x!==i):[..
 rsid(){V.rsid=id;V.rday=null},
 rday(){V.rday=b.dataset.v},
 'reset-stars'(){modal(`<h2 style="font-size:22px">تصفير النجوم</h2><label>لمن؟<select id="rsWho"><option value="all">جميع الطالبات</option>${S.students.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
-<p class="muted" style="margin:0">تعود النجوم ورصيد اللعب إلى صفر، ويتغيّر ترتيب لوحة الشرف. أما الحدائق والقلب وسجل التسميع ومشروع الحلقة فتبقى كما هي.</p>
+<p class="muted" style="margin:0">تعود النجوم ورصيد اللعب إلى صفر، ويتغيّر ترتيب لوحة الشرف. أما الحدائق والقلب وسجل التسميع فتبقى كما هي.</p>
+<label class="chkl" id="rsProjL"><input type="checkbox" id="rsProj" checked>تصفير تقدّم مشروع الحلقة «${esc(S.build.name)}» أيضًا</label>
 <button class="btn" style="background:#B3261E" data-act="reset-stars-ok">نعم، صفّري النجوم</button><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
-'reset-stars-ok'(){const w=(document.getElementById('rsWho')||{}).value||'all',list=w==='all'?S.students:S.students.filter(x=>x.id===w);
+'reset-stars-ok'(){const w=(document.getElementById('rsWho')||{}).value||'all',list=w==='all'?S.students:S.students.filter(x=>x.id===w),rp=(document.getElementById('rsProj')||{}).checked;
+if(rp){const B=S.build;if(w==='all'){B.by={};B.days={};B.carry=0;RAW.push(['build/by',null],['build/days',null])}else{const sid=list[0].id;delete B.by[sid];RAW.push(['build/by/'+sid,null]);Object.entries(B.days||{}).forEach(([dk,dd])=>{if(dd.by&&dd.by[sid]!=null){delete dd.by[sid];RAW.push(['build/days/'+dk+'/by/'+sid,null])}})}}
 list.forEach(x=>{x.stars=0;x.spent=0;RAW.push(['students/'+x.id+'/stars',0])});save();closeM();toast(w==='all'?'صُفّرت نجوم جميع الطالبات':'صُفّرت نجوم '+list[0].name)},
 'logo-icon'(){S.set.logo={t:'icon',k:b.dataset.v};save();toast('تم تغيير الشعار')},
 'logo-del'(){S.set.logo={t:'icon',k:'flower'};save();toast('أُزيلت الصورة')},
