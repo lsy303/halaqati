@@ -522,16 +522,23 @@ if(V.ttab==='games')b=`<section class="card"><h2 style="font-size:20px;margin-bo
 <button class="btn ghost" style="width:100%;margin-top:10px" data-act="new-proj">${bTotal()>=bGoal()?'بدء المشروع التالي':'إنهاء المشروع وبدء مشروع جديد'}</button></section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:8px">أرصدة اللعب</h2><p class="muted" style="margin:0 0 8px">رصيد الحديقة = مجموع النجوم − ما صرفته الطالبة. أما مشروع الحلقة فيتقدّم تلقائيًا من نجوم الحلقة ولا يُخصم من أرصدة الطالبات.</p><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:46px">${av(s,32)}<span class="nm">${esc(s.name)}</span><span class="muted">صرفت ${n(s.spent||0)}</span><span class="st">${n(bal(s))}${STAR}</span></div>`).join('')}</div></section>`;
 if(V.ttab==='prog'){
-const days=S.plan.rows.map(r=>r.day);const maxR=Math.max(days.length,...S.students.map(s=>planOf(s).rows.length));
-const gl=groups(S.plan).filter(g=>g.some(c=>c.k==='c')).map(g=>{const t=g.filter(c=>c.k==='t');return t.length?t[t.length-1].l:g.find(c=>c.k==='c').l});
 const DOTC=['var(--mintd)','var(--sund)','var(--ad)'];
-const cell=(s,i)=>{const gr=S.plan.rows[i];if(!gr)return'<td class="muted">—</td>';
-return`<td><span class="dots">${plans(s).map(({pl,px},pi)=>{const r=pi?rowFor(pl,gr.day):gr;if(!r)return'';const gs=groups(pl).filter(g=>g.some(c=>c.k==='c'));return (pi?'<i class="dsep"></i>':'')+gs.map((g,gi)=>{const c=g.find(x=>x.k==='c');if(!active(pl,r,c))return'<i class="dt na" title="لا يوجد"></i>';const ok=s.done[px+r.id+':'+c.id]==='ok';return`<i class="dt ${ok?'on':''} ${pi?'pv':''}" style="--dc:${pi?'var(--ad)':DOTC[gi%3]}"></i>`}).join('')}).join('')}</span></td>`};
-b=`<section class="card"><div class="ttl"><h2>إنجاز الحلقة</h2><span>${esc(S.plan.title)}</span></div>
-<div class="legend" style="margin:0 0 8px">${gl.map((l,i)=>`<span><i style="background:${DOTC[i%3]};border-color:${DOTC[i%3]};border-radius:50%"></i>${esc(l)}</span>`).join('')}<span><i style="border-color:#C9B8C4;border-radius:50%"></i>لم يتم</span>${S.students.some(x=>x.plan)?'<span><i style="border-color:var(--ad);border-radius:4px"></i>بعد | الخطة الخاصة</span>':''}</div>
-<div class="scroll"><table class="pt mx"><thead><tr><th style="text-align:start">الطالبة</th>${Array.from({length:maxR},(_,i)=>`<th>${esc(days[i]||'يوم '+n(i+1))}</th>`).join('')}<th>المجموع</th></tr></thead><tbody>
-${S.students.map(s=>{const x=slots(s),d=x.filter(y=>y.v==='ok').length;return`<tr><th style="text-align:start"><button class="nmb" data-act="open" data-id="${s.id}">${av(s,26)}${esc(s.name)}${s.plan?'<span class="tag" style="background:var(--as);color:var(--ad)">خاصة</span>':''}</button></th>${Array.from({length:maxR},(_,i)=>cell(s,i)).join('')}<td style="font-weight:700;color:${d===x.length&&x.length?'var(--mintd)':'var(--ink)'}">${n(d)}/${n(x.length)}</td></tr>`}).join('')}
-</tbody></table></div><p class="muted" style="margin:8px 0 0">تُحدَّث تلقائيًا عند وضع الطالبة «التمام»، وكل تمام يمنحها نجمة.</p></section>`;}
+const lbls=pl=>groups(pl).filter(g=>g.some(c=>c.k==='c')).map(g=>{const t=g.filter(c=>c.k==='t');return t.length?t[t.length-1].l:g.find(c=>c.k==='c').l});
+const dots=(s,pl,px,r)=>{if(!r)return'<td class="muted">—</td>';return`<td><span class="dots">${groups(pl).filter(g=>g.some(c=>c.k==='c')).map((g,gi)=>{const c=g.find(x=>x.k==='c');if(!active(pl,r,c))return'<i class="dt na" title="لا يوجد"></i>';const ok=s.done[px+r.id+':'+c.id]==='ok';return`<i class="dt ${ok?'on':''}" style="--dc:${DOTC[gi%3]}"></i>`}).join('')}</span></td>`};
+const tot=(s,px)=>{const x=slots(s).filter(y=>px?y.k.startsWith('p:'):!y.k.startsWith('p:')),d=x.filter(y=>y.v==='ok').length;return`<td style="font-weight:700;color:${d===x.length&&x.length?'var(--mintd)':'var(--ink)'}">${n(d)}/${n(x.length)}</td>`};
+const leg=pl=>`<div class="legend" style="margin:0 0 8px">${lbls(pl).map((l,i)=>`<span><i style="background:${DOTC[i%3]};border-color:${DOTC[i%3]};border-radius:50%"></i>${esc(l)}</span>`).join('')}<span><i style="border-color:#C9B8C4;border-radius:50%"></i>لم يتم</span></div>`;
+const nm=s=>`<th style="text-align:start"><button class="nmb" data-act="open" data-id="${s.id}">${av(s,26)}${esc(s.name)}</button></th>`;
+const gd=S.plan.rows.map(r=>r.day);
+const ps=S.students.filter(s=>s.plan);
+const pd=[];hDays().map(i=>WDN[i]).concat(...ps.map(s=>s.plan.rows.map(r=>String(r.day).trim()))).forEach(d=>{if(!pd.includes(d)&&ps.some(s=>rowFor(s.plan,d)))pd.push(d)});
+b=`<section class="card"><div class="ttl"><h2>إنجاز الحلقة</h2><span>${esc(S.plan.title)}</span></div>${leg(S.plan)}
+<div class="scroll"><table class="pt mx"><thead><tr><th style="text-align:start">الطالبة</th>${gd.map(d=>`<th>${esc(d)}</th>`).join('')}<th>المجموع</th></tr></thead><tbody>
+${S.students.map(s=>`<tr>${nm(s)}${S.plan.rows.map(r=>dots(s,S.plan,'',r)).join('')}${tot(s,'')}</tr>`).join('')}
+</tbody></table></div><p class="muted" style="margin:8px 0 0">تُحدَّث تلقائيًا عند وضع الطالبة «التمام»، وكل تمام يمنحها نجمة.</p></section>
+${ps.length?`<section class="card"><div class="ttl"><h2>الخطط الخاصة</h2><span>${n(ps.length)} ${ps.length>2&&ps.length<11?'طالبات':'طالبة'}</span></div>${leg(ps[0].plan)}
+<div class="scroll"><table class="pt mx"><thead><tr><th style="text-align:start">الطالبة</th>${pd.map(d=>`<th>${esc(d)}</th>`).join('')}<th>المجموع</th></tr></thead><tbody>
+${ps.map(s=>`<tr>${nm(s)}${pd.map(d=>dots(s,s.plan,'p:',rowFor(s.plan,d))).join('')}${tot(s,'p:')}</tr>`).join('')}
+</tbody></table></div></section>`:''}`;}
 if(V.ttab==='recite'){
 const rs=stu(V.rsid)||S.students[0];
 if(!rs)b='<p class="muted">أضيفي الطالبات من الإعدادات أولًا.</p>';else{V.rsid=rs.id;const pl=planOf(rs),TI=new Date().getDay(),HD=hDays(),isHD=HD.includes(TI);let LI=TI;if(!isHD){for(let q=1;q<=7;q++){const j=(TI-q+7)%7;if(HD.includes(j)&&pl.rows.some(x=>String(x.day).trim()===WDN[j])){LI=j;break}}}const WD=WDN[LI];
