@@ -115,6 +115,10 @@ form{display:flex;flex-direction:column;gap:10px}
 .stone.on{background:var(--c);border-color:var(--c);color:#3B2340}
 .stone.on .sn{background:rgba(255,255,255,.6)}
 .hz{overflow:auto;margin-inline:-6px}.hz svg{display:block;width:100%;height:auto}.hz.z svg{width:230%}
+.cele{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:11}
+.cele i{position:absolute;top:-20px;width:12px;height:16px;border-radius:50% 50% 50% 0;animation:fall 2.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.cele{display:none}}
 .hverse{text-align:center;font-family:'Baloo Bhaijaan 2',Tajawal;font-size:18px;margin:8px 0;color:var(--ink)}
 .lawn{border-radius:26px;overflow:hidden;box-shadow:0 6px 18px rgba(62,138,79,.18);line-height:0}
 .decor{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px}
@@ -431,7 +435,7 @@ ${planTable(s,planOf(s),true)}
 <div class="bar" style="background:var(--as);margin-bottom:10px"><div style="width:${(s.mem.length/114*100).toFixed(1)}%;background:var(--ad)"></div></div>
 ${s.mem.length===114?'<div class="note" style="text-align:center;font-weight:700;margin-bottom:8px">ما شاء الله! اكتمل قلبكِ بالقرآن كاملًا</div>':''}
 <div class="hz ${V.zoom?'z':''}">${heartSVG(s)}</div>
-<p class="hverse">وكلُّ قلبٍ لم تُشرق فيه أنوار القرآن فهو مُظلم</p>
+<p class="hverse">«اللهمّ اجعلِ القرآنَ ربيعَ قلبي، ونورَ صدري»</p>
 <div class="hrow"><span class="muted" id="hinfo" style="flex:1">${V.teacher?'بصفتكِ معلمة: اضغطي على السورة لتلوينها أو إزالة لونها.':'اضغطي على أي سورة لمعرفة حالتها.'}</span><button class="btn ghost sm" data-act="zoom">${V.zoom?'تصغير':'تكبير القلب'}</button></div>
 <p class="muted" style="margin:6px 0 0">تتلوّن السورة تلقائيًا عندما تسجّل المعلمة إتمام حفظها كاملة.</p></section></main>`;
 }
@@ -501,12 +505,21 @@ function fitHeart(){const go=()=>document.querySelectorAll('.hz text[data-w]').f
 function busy(){const a=document.activeElement;return(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))||!!document.querySelector('#layer .modal')}
 function boot(msg){document.getElementById('app').innerHTML=`<main style="padding-top:60px;text-align:center"><div class="logo" style="margin:0 auto 14px;background:var(--as)">${ICONS.flower.replace('<svg','<svg width="34" height="34"')}</div>${msg}</main>`}
 function setup(){document.getElementById('app').innerHTML=`<main style="padding-top:30px"><section class="card"><h1 style="font-size:24px;margin-bottom:6px">إنشاء الحلقة</h1><p class="muted" style="margin:0 0 10px">هذه الحلقة جديدة. أدخلي بياناتها للبدء.</p><form data-form="create"><label>اسم الحلقة<input name="halaqa" required></label><label>اسم المعلمة<input name="teacher" required></label><label>رمز دخول المعلمة<input name="pin" inputmode="numeric" required></label><button class="btn">إنشاء الحلقة</button></form><button class="btn ghost" style="width:100%;margin-top:10px" data-act="demo">البدء ببيانات تجريبية</button></section></main>`}
+function celebrate(){if(V.view!=='student'||!V.me||V.sid!==V.me||document.querySelector('#layer .modal'))return;const s=stu(V.me);if(!s)return;
+if(!Array.isArray(s.seen)){s.seen=[...s.mem];save();return}
+const nw=s.mem.filter(x=>!s.seen.includes(x));if(!nw.length)return;s.seen=[...s.mem];save();
+const names=nw.map(x=>'«'+SURAHS[x-1]+'»').join(' و');
+modal(`<div class="cele" aria-hidden="true">${Array.from({length:14},(_,i)=>`<i style="left:${(i*7+3)%100}%;animation-delay:${(i%5)*.25}s;background:${HPAL[i%HPAL.length]}"></i>`).join('')}</div>
+<div style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center"><span class="av" style="width:84px;height:84px;background:${ICOL.heart}">${ICONS.heart}</span>
+<h2 style="font-size:26px">ما شاء الله يا ${esc(s.name)}!</h2><p style="margin:0;font-size:17px;font-weight:700">تلوّنت ${nw.length>1?'سور':'سورة'} ${names} في قلبكِ</p>
+<p class="hverse" style="color:var(--ad);font-size:22px">كلُّ سورةٍ تحفظينها تُزهِرُ في قلبكِ</p><p class="muted" style="margin:0">أصبح في قلبكِ ${n(s.mem.length)} سورة من ١١٤</p></div>
+<button class="btn" data-act="close">الحمد لله</button>`)}
 function render(){if(!S)return;
 applyTheme();
 const v=V.view,map={home,honor,comps,student,teacher,games,garden};
 const nav=[['home','الرئيسية',P.home],['honor','الشرف',P.trophy],['games','الألعاب',P.sprout],['comps','المسابقات',P.flag],['teacher','المعلمة',P.lock]];
 document.getElementById('app').innerHTML=(map[v]||home)()+`<nav class="tabs">${nav.map(([k,l,d])=>`<button class="${v===k||(v==='student'&&k==='home')||(v==='garden'&&k==='games')?'on':''}" data-act="nav" data-v="${k}">${I(d)}<span>${l}</span></button>`).join('')}</nav>`;
-fitHeart();
+fitHeart();setTimeout(celebrate,250);
 }
 function askCode(s,then){
 modal(`<h2 style="font-size:22px">أهلًا ${esc(s.name)}</h2><p class="muted" style="margin:0">أدخلي رمزكِ الذي أعطتكِ إياه المعلمة.</p><form data-form="stucode" data-id="${s.id}"><label>الرمز<input name="code" type="password" inputmode="numeric" autocomplete="off" required autofocus></label><button class="btn">دخول</button></form><button class="btn ghost" data-act="close">إلغاء</button>`);
