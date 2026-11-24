@@ -12,6 +12,13 @@
     "settings": {
       ".read": true,
       ".write": false
+    },
+    "photos": {
+      "$hid": {
+        ".read": true,
+        ".write": true,
+        ".validate": "$hid.matches(/^[a-z0-9_-]{1,40}$/)"
+      }
     }
   }
 }

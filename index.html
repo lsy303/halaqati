@@ -59,7 +59,7 @@ main{padding:16px 16px 0;display:flex;flex-direction:column;gap:14px}
 .row .nm{flex:1;font-weight:700}
 .st{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--ad)}
 .list{display:flex;flex-direction:column;gap:8px}
-nav.tabs{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(452px,calc(100% - 24px));background:#fff;border-radius:26px;padding:7px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));box-shadow:0 8px 24px rgba(59,35,64,.16);z-index:5}
+nav.tabs{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(452px,calc(100% - 24px));background:#fff;border-radius:26px;padding:7px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));box-shadow:0 8px 24px rgba(59,35,64,.16);z-index:5}
 nav.tabs button{border:0;background:none;border-radius:19px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700;color:var(--mut)}
 nav.tabs button.on{background:var(--ad);color:#fff}
 .btn{border:0;border-radius:16px;min-height:46px;padding:0 18px;font-weight:700;background:var(--ad);color:#fff}
@@ -155,6 +155,11 @@ form{display:flex;flex-direction:column;gap:10px}
 .cstrip{display:flex;gap:8px;overflow-x:auto;margin:-2px -2px 0;padding:2px}
 .cband{flex:1 0 auto;min-width:100%;display:flex;align-items:center;gap:10px;border:0;background:var(--sun);color:var(--sund);border-radius:16px;padding:8px 12px;min-height:52px;text-align:start}
 .S2 .cband{min-width:85%}.cband .ct{flex:1;display:flex;flex-direction:column;line-height:1.3}.cband b{color:var(--ink);font-size:15px}.cband small{font-size:12px}
+.pc{width:100%;border-collapse:collapse;font-size:13px}.pc th,.pc td{padding:5px 4px;border-bottom:1px solid var(--as);text-align:start}.pc thead th{color:var(--mut);font-size:12px}.pc tbody th{color:var(--ad);white-space:nowrap}
+.phs{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}
+.ph{flex:none;width:150px;height:150px;border:0;padding:0;border-radius:16px;overflow:hidden;position:relative;scroll-snap-align:start;background:var(--bg)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}.ph span{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:12px;font-weight:700;padding:14px 8px 6px;text-align:start}
+.phgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.phi{display:flex;flex-direction:column;gap:6px}.phi img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px}.phi input{padding:8px;font-size:14px}
 .ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
@@ -208,7 +213,7 @@ const THEMES={rose:['ورديّ','#E25C8F','#B8336B','#FFE3EC','#FFF4F7'],lilac:
 const RATES=[['ممتاز',3],['جيد جدًا',2],['جيد',1],['يحتاج إعادة',0]];
 const STAR='<svg width="16" height="16" viewBox="0 0 24 24" fill="#F2A93B" aria-hidden="true"><path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7L12 17.3 5.7 21.2l1.7-7L2 9.5l7.1-.6z"/></svg>';
 const I=(d,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
-const P={home:'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',trophy:'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4',flag:'M5 21V4h11l-2 4 2 4H5',lock:'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',back:'M9 6l6 6-6 6',cal:'M3 5h18v16H3zM8 2v4M16 2v4M3 10h18',check:'M5 12l5 5 9-10',x:'M6 6l12 12M18 6L6 18',plus:'M12 5v14M5 12h14',sprout:'M12 21v-9M12 12c-4.5 0-7.5-3-7.5-7.5 4.5 0 7.5 3 7.5 7.5zM12 15c3.5 0 6.5-2.5 6.5-6.5-3.5 0-6.5 2.5-6.5 6.5z'};
+const P={home:'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',trophy:'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4',flag:'M5 21V4h11l-2 4 2 4H5',lock:'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',back:'M9 6l6 6-6 6',cal:'M3 5h18v16H3zM8 2v4M16 2v4M3 10h18',check:'M5 12l5 5 9-10',x:'M6 6l12 12M18 6L6 18',plus:'M12 5v14M5 12h14',users:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7.5M18 21v-1a6 6 0 0 0-3-5.2',sprout:'M12 21v-9M12 12c-4.5 0-7.5-3-7.5-7.5 4.5 0 7.5 3 7.5 7.5zM12 15c3.5 0 6.5-2.5 6.5-6.5-3.5 0-6.5 2.5-6.5 6.5z'};
 const n=x=>Number(x).toLocaleString('ar-EG');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long'});
@@ -429,7 +434,7 @@ function flat(o){const m={},put=(p,v)=>{m[p]=JSON.stringify(v===undefined?null:v
 ['set','ticker','phrases','plan','comps','gallery'].forEach(k=>put(k,o[k]));
 const b=o.build;['name','reward','bonusN','type','goal','id','carry'].forEach(k=>put('build/'+k,b[k]));Object.entries(b.days||{}).forEach(([d,x])=>put('build/days/'+d+'/bonus',x.bonus||0));
 o.students.forEach(s=>Object.entries(s).forEach(([k,v])=>{if(k!=='id'&&k!=='stars')put('students/'+s.id+'/'+k,v)}));return m}
-let S=null,LAST={},INC=[],RAW=[],DB=null,PEND=false,FERR='';
+let PH=[],S=null,LAST={},INC=[],RAW=[],DB=null,PEND=false,FERR='';
 function save(){if(!DB||!S)return;const cur=flat(S),u={};
 for(const p in cur)if(cur[p]!==LAST[p])u[p]=JSON.parse(cur[p]);
 for(const p in LAST)if(!(p in cur))u[p]=null;
@@ -448,6 +453,10 @@ const active=(pl,r,col)=>{const g=groups(pl).find(x=>x.includes(col)),tx=g.filte
 const slots=s=>{const o=[];plans(s).forEach(({pl,px})=>pl.rows.forEach(r=>pl.cols.forEach(c=>{if(c.k==='c'&&active(pl,r,c)){const k=px+r.id+':'+c.id;o.push({r,c,k,v:s.done[k]})}})));return o};
 const slotLabel=(pl,r,col)=>{const g=groups(pl).find(x=>x.includes(col));return r.day+' — '+g.filter(c=>c.k==='t').map(c=>r.c[c.id]||'').filter(Boolean).join(' ')};
 const TINT=['var(--mint)','var(--sun)','var(--as)'],TINK=['var(--mintd)','var(--sund)','var(--ad)'];
+function planCompact(pl){const gs=groups(pl).filter(g=>g.some(c=>c.k==='t'));const lab=g=>{const t=g.filter(c=>c.k==='t');return t[t.length-1].l};
+return`<table class="pc"><thead><tr><th>اليوم</th>${gs.map(g=>`<th>${esc(lab(g))}</th>`).join('')}</tr></thead><tbody>${pl.rows.map(r=>`<tr><th>${esc(r.day)}</th>${gs.map(g=>`<td>${esc(g.filter(c=>c.k==='t').map(c=>r.c[c.id]||'').filter(Boolean).join(' '))||'—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+function photoStrip(){if(!PH.length)return'';return`<section class="card"><div class="ttl"><h2>من أجواء الحلقة</h2><span>${n(PH.length)} صورة</span></div><div class="phs">${PH.map((p,i)=>`<button class="ph" data-act="photo" data-i="${i}" aria-label="${esc(p.cap||'صورة من الحلقة')}"><img src="${esc(p.d)}" alt="" loading="lazy">${p.cap?`<span>${esc(p.cap)}</span>`:''}</button>`).join('')}</div></section>`}
+function photoView(i){const p=PH[i];if(!p)return;modal(`<img src="${esc(p.d)}" alt="${esc(p.cap||'')}" style="width:100%;border-radius:18px;max-height:62vh;object-fit:contain;background:#000">${p.cap?`<p style="margin:0;font-weight:700;text-align:center">${esc(p.cap)}</p>`:''}<p class="muted" style="margin:0;text-align:center">${new Date(p.t).toLocaleDateString('ar-EG',{day:'numeric',month:'long'})}</p><div class="duo"><button class="btn ghost" data-act="photo" data-i="${(i+1)%PH.length}">التالية</button><button class="btn ghost" data-act="photo" data-i="${(i-1+PH.length)%PH.length}">السابقة</button></div><button class="btn" data-act="close">إغلاق</button>`)}
 function planTable(s,pl,live,px){px=px||'';
 const gi={};groups(pl).forEach((g,i)=>g.forEach(c=>gi[c.id]=i%3));
 return`<div class="scroll"><table class="pt"><thead><tr><th>اليوم</th>${pl.cols.map(c=>`<th style="background:${TINT[gi[c.id]]};color:${TINK[gi[c.id]]}">${esc(c.l)}</th>`).join('')}</tr></thead><tbody>
@@ -479,11 +488,13 @@ ${S.comps.length?`<div class="cstrip ${S.comps.length>1?'S2':''}">${S.comps.map(
 <section class="card"><div class="ttl"><h2>لوحة الشرف</h2><span>الأعلى نجومًا</span></div><div class="pod">
 ${top.map((s,i)=>s?`<button data-act="open" data-id="${s.id}">${av(s,i===1?60:50)}<b>${esc(s.name)}</b><div class="step" style="height:${hs[i]};background:${bg[i]}"><i>${rk[i]}</i>${n(s.stars)} نجمة</div></button>`:'').join('')}
 </div></section>
-<section class="card"><div class="ttl"><h2>${I(P.cal,20)} خطة الأسبوع</h2><span>${esc(pl.title)}</span></div>${planTable(null,pl,false)}<p class="muted" style="margin:8px 0 0">لكل طالبة صفحة تضع فيها «التمام» عند الإنجاز.</p></section>
-<section class="list"><h2 style="font-size:19px">طالبات الحلقة</h2>
-${S.students.map(s=>{const x=slots(s),d=x.filter(y=>y.v==='ok').length;return`<button class="row" data-act="open" data-id="${s.id}">${av(s,40)}<span class="nm">${esc(s.name)}<br><span class="muted">الخطة ${n(d)}/${n(x.length)} · القلب ${n((s.mem||[]).length)}/١١٤</span></span><span class="st">${n(s.stars)}${STAR}</span></button>`}).join('')}
-</section></main>`;
+${photoStrip()}
+<section class="card"><div class="ttl"><h2>${I(P.cal,20)} خطة الأسبوع</h2><span>${esc(pl.title)}</span></div>${planCompact(pl)}</section>
+</main>`;
 }
+function students(){return header()+`<main><section class="list"><h2 style="font-size:21px">طالبات الحلقة</h2>
+${S.students.map(s=>{const x=slots(s),d=x.filter(y=>y.v==='ok').length;return`<button class="row" data-act="open" data-id="${s.id}">${av(s,40)}<span class="nm">${esc(s.name)}<br><span class="muted">الخطة ${n(d)}/${n(x.length)} · القلب ${n((s.mem||[]).length)}/١١٤</span></span><span class="st">${n(s.stars)}${STAR}</span></button>`}).join('')}
+</section></main>`}
 function honor(){
 return header()+`<main><section class="card"><div class="ttl"><h2>ترتيب الحلقة</h2><span>حسب مجموع النجوم</span></div><div class="list">
 ${ranked().map((s,i)=>`<button class="row" data-act="open" data-id="${s.id}" style="background:${i<3?'var(--bg)':'#fff'}"><b style="width:26px;text-align:center;font-family:'Baloo Bhaijaan 2';font-size:20px">${n(i+1)}</b>${av(s,38)}<span class="nm">${esc(s.name)}</span><span class="st">${n(s.stars)}${STAR}</span></button>`).join('')}
@@ -495,7 +506,7 @@ return header()+`<main><h2 style="font-size:21px">المسابقات</h2>${S.com
 function student(){
 const s=stu(V.sid);if(!s)return home();const mine=V.me===s.id;
 const st={ok:['تمّ — اعتمدتها المعلمة','var(--mint)','var(--mintd)'],wait:['بانتظار اعتماد المعلمة','var(--sun)','var(--sund)']};
-return`<main style="padding-top:18px"><div class="hrow"><button class="back" data-act="nav" data-v="home">${I(P.back,18)}رجوع</button>${mine?'<button class="btn ghost sm" data-act="stu-logout">خروج</button>':`<button class="btn ghost sm" data-act="login-stu" data-id="${s.id}">أنا ${esc(s.name)}</button>`}</div>
+return`<main style="padding-top:18px"><div class="hrow"><button class="back" data-act="nav" data-v="students">${I(P.back,18)}رجوع</button>${mine?'<button class="btn ghost sm" data-act="stu-logout">خروج</button>':`<button class="btn ghost sm" data-act="login-stu" data-id="${s.id}">أنا ${esc(s.name)}</button>`}</div>
 <section class="card" style="display:flex;align-items:center;gap:14px"><button data-act="pick-icon" data-id="${s.id}" aria-label="تغيير الأيقونة" style="border:0;background:none;padding:0;position:relative">${av(s,84)}<span style="position:absolute;bottom:0;left:0;background:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.15);color:var(--ad)">${I('M4 20h4L19 9l-4-4L4 16zM14 6l4 4',16)}</span></button>
 <div style="flex:1"><h1 style="font-size:28px">${esc(s.name)}</h1><div style="display:flex;align-items:baseline;gap:6px"><span class="big">${n(s.stars)}</span><span class="muted">نجمة · الترتيب ${n(ranked().indexOf(s)+1)}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><span class="tag" style="background:#FFF0C2;color:#7A4A00">رصيد اللعب ${n(bal(s))}★</span><button class="btn ghost sm" data-act="garden" data-id="${s.id}" style="min-height:32px">حديقة ${esc(s.name)}</button></div></div></section>
 ${s.notes.length?`<section class="list"><h2 style="font-size:18px">رسائل من المعلمة</h2>${s.notes.slice().reverse().map(x=>`<div class="note">${esc(x.t)}<small>${esc(x.d)}</small></div>`).join('')}</section>`:''}
@@ -514,7 +525,7 @@ ${s.mem.length===114?'<div class="note" style="text-align:center;font-weight:700
 }
 function teacher(){
 if(!V.teacher)return`<main style="padding-top:40px"><section class="card"><h2 style="font-size:22px;margin-bottom:6px">دخول المعلمة</h2><p class="muted" style="margin:0 0 10px">أدخلي رمز الدخول لإدارة الحلقة.</p><form data-form="tlogin"><label>رمز الدخول<input name="pin" type="password" inputmode="numeric" autocomplete="off" required></label><button class="btn">دخول</button></form></section></main>`;
-const tabs=[['prog','الإنجاز'],['recite','التسميع'],['plan','الخطة'],['games','الألعاب والمسابقات'],['cheer','التشجيع'],['set','الإعدادات']];if(!tabs.some(t=>t[0]===V.ttab))V.ttab='prog';
+const tabs=[['prog','الإنجاز'],['recite','التسميع'],['plan','الخطة'],['games','الألعاب والمسابقات'],['cheer','التشجيع'],['photos','الصور'],['set','الإعدادات']];if(!tabs.some(t=>t[0]===V.ttab))V.ttab='prog';
 const opts=S.students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
 let b='';
 if(V.ttab==='games')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:6px">مشروع الحلقة الحالي</h2><p class="muted" style="margin:0 0 8px">${esc(S.build.name)} — ${n(bTotal())} من ${n(bGoal())} نجمة${bTotal()>=bGoal()?' · مكتمل ✓':''}</p>
@@ -522,6 +533,9 @@ if(V.ttab==='games')b=`<section class="card"><h2 style="font-size:20px;margin-bo
 <label>اسم المشروع<input name="name" value="${esc(S.build.name)}" required></label><label>عدد النجوم للمشروع كاملًا<input name="goal" type="number" min="6" step="1" value="${bGoal()}" required></label><label>المكافأة عند الاكتمال<input name="reward" value="${esc(S.build.reward||'')}"></label><label>نجوم إضافية عند مشاركة جميع الطالبات في اليوم<input name="bonusN" type="number" min="0" value="${S.build.bonusN}" required></label><button class="btn">حفظ</button></form>
 <button class="btn ghost" style="width:100%;margin-top:10px" data-act="new-proj">${bTotal()>=bGoal()?'بدء المشروع التالي':'إنهاء المشروع وبدء مشروع جديد'}</button></section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:8px">أرصدة اللعب</h2><p class="muted" style="margin:0 0 8px">رصيد الحديقة = مجموع النجوم − ما صرفته الطالبة. أما مشروع الحلقة فيتقدّم تلقائيًا من نجوم الحلقة ولا يُخصم من أرصدة الطالبات.</p><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:46px">${av(s,32)}<span class="nm">${esc(s.name)}</span><span class="muted">صرفت ${n(s.spent||0)}</span><span class="st">${n(bal(s))}${STAR}</span></div>`).join('')}</div></section>`;
+if(V.ttab==='photos')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:6px">صور الحلقة</h2><p class="muted" style="margin:0 0 10px">تظهر في الصفحة الرئيسية تحت «من أجواء الحلقة». يُفضّل اختيار صور الأنشطة واللحظات الجماعية.</p>
+<label class="upl" style="position:relative">${I(P.plus,18)}إضافة صور من الجهاز<input type="file" accept="image/*" multiple id="photoFiles"></label>
+<div class="phgrid" style="margin-top:12px">${PH.map(p=>`<div class="phi"><img src="${esc(p.d)}" alt=""><input data-ph="${p.id}" value="${esc(p.cap||'')}" placeholder="تعليق (اختياري)"><button class="btn ghost sm" data-act="ph-del" data-v="${p.id}">حذف</button></div>`).join('')||'<p class="muted" style="margin:0">لا توجد صور بعد.</p>'}</div></section>`;
 if(V.ttab==='prog'){
 const DOTC=['var(--mintd)','var(--sund)','var(--ad)'];
 const lbls=pl=>groups(pl).filter(g=>g.some(c=>c.k==='c')).map(g=>{const t=g.filter(c=>c.k==='t');return t.length?t[t.length-1].l:g.find(c=>c.k==='c').l});
@@ -617,9 +631,9 @@ modal(`<div class="cele" aria-hidden="true">${Array.from({length:14},(_,i)=>`<i 
 <button class="btn" data-act="close">الحمد لله</button>`)}
 function render(){if(!S)return;
 applyTheme();
-const v=V.view,map={home,honor,comps,student,teacher,games,garden};
-const nav=[['home','الرئيسية',P.home],['honor','الشرف',P.trophy],['games','الألعاب',P.sprout],['teacher','المعلمة',P.lock]];
-document.getElementById('app').innerHTML=(map[v]||home)()+`<nav class="tabs">${nav.map(([k,l,d])=>`<button class="${v===k||(v==='student'&&k==='home')||(v==='garden'&&k==='games')?'on':''}" data-act="nav" data-v="${k}">${I(d)}<span>${l}</span></button>`).join('')}</nav>`;
+const v=V.view,map={home,honor,comps,student,teacher,games,garden,students};
+const nav=[['home','الرئيسية',P.home],['students','الطالبات',P.users],['honor','الشرف',P.trophy],['games','الألعاب',P.sprout],['teacher','المعلمة',P.lock]];
+document.getElementById('app').innerHTML=(map[v]||home)()+`<nav class="tabs">${nav.map(([k,l,d])=>`<button class="${v===k||(v==='student'&&k==='students')||(v==='garden'&&k==='games')?'on':''}" data-act="nav" data-v="${k}">${I(d)}<span>${l}</span></button>`).join('')}</nav>`;
 fitHeart();setTimeout(celebrate,250);setTimeout(projCelebrate,300);
 }
 function askCode(s,then){
@@ -651,6 +665,8 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan={title:'خطة '+t.name+' الخاصة',cols:defCols(),rows:hDays().map(i=>({id:uid(),day:WDN[i],c:{}}))};save();toast('أُنشئت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+photo(){photoView(+b.dataset.i);return 'keep'},
+'ph-del'(){if(DB)DB.ref('photos/'+HID+'/'+b.dataset.v).set(null);toast('حُذفت الصورة');return 'keep'},
 'comp-info'(){const x=S.comps.find(q=>q.id===b.dataset.v);if(!x)return 'keep';const w=x.winner&&stu(x.winner);modal(`<div style="display:flex;align-items:center;gap:10px;color:var(--sund)">${I(P.trophy,28)}<h2 style="font-size:22px;color:var(--ink)">${esc(x.title)}</h2></div><p style="margin:0;font-size:17px">${esc(x.desc||'')}</p><p class="muted" style="margin:0">تنتهي: ${esc(x.ends||'')}${x.prize?' · الجائزة: '+esc(x.prize):''}</p>${w?`<div class="row" style="background:var(--sun)">${av(w,40)}<span class="nm">الفائزة: ${esc(w.name)}</span></div>`:''}<button class="btn ghost" data-act="close">إغلاق</button>`);return 'keep'},
 'edit-stu'(){modal(`<h2 style="font-size:22px">تعديل بيانات الطالبة</h2><form data-form="editstu" data-id="${s.id}"><label>الاسم<input name="name" value="${esc(s.name)}" required></label><label>الرمز<input name="code" value="${esc(s.code)}" inputmode="numeric" autocomplete="off" required></label><button class="btn">حفظ</button></form><p class="muted" style="margin:0">تبقى نجومها وخطتها وتسميعها وحديقتها كما هي.</p><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
 hday(){const i=+b.dataset.v;let d=hDays();d=d.includes(i)?d.filter(x=>x!==i):[...d,i].sort((a,c)=>a-c);if(!d.length)return toast('اختاري يومًا واحدًا على الأقل');S.set.days=d;save()},
@@ -701,6 +717,10 @@ if(go&&go()!=='keep')render();
 });
 const tp=()=>V.pfor==='all'?S.plan:stu(V.pfor).plan;
 document.addEventListener('change',e=>{const el=e.target,ed=el.dataset.ed;
+if(el.dataset&&el.dataset.ph&&DB){DB.ref('photos/'+HID+'/'+el.dataset.ph+'/cap').set(el.value.trim());toast('حُفظ التعليق');return}
+if(el.id==='photoFiles'&&el.files&&el.files.length&&DB){const fs=[...el.files].filter(f=>/^image\//.test(f.type));toast('جارٍ رفع '+n(fs.length)+' صورة…');
+fs.forEach((f,j)=>{const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const M=1100,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);const d=c.toDataURL('image/jpeg',.72);
+DB.ref('photos/'+HID+'/'+uid()).set({d,cap:'',t:Date.now()+j}).then(()=>{if(j===fs.length-1){toast('أُضيفت الصور');if(PH.length>40)PH.slice(40).forEach(p=>DB.ref('photos/'+HID+'/'+p.id).set(null))}})};im.src=rd.result};rd.readAsDataURL(f)});el.value='';return}
 if(el.id==='logoFile'&&el.files&&el.files[0]){const f=el.files[0];if(!/^image\//.test(f.type))return toast('اختاري ملف صورة');const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const M=200,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);let d=c.toDataURL('image/png');if(d.length>90000)d=c.toDataURL('image/jpeg',.85);S.set.logo={t:'img',d};save();render();toast('رُفع الشعار')};im.onerror=()=>toast('تعذّر قراءة الصورة');im.src=rd.result};rd.readAsDataURL(f);return}
 if(ed){if(ed==='pfor'){V.pfor=el.value;return render()}
 const pl=tp();if(!pl)return;const col=pl.cols.find(c=>c.id===el.dataset.c),row=pl.rows.find(r=>r.id===el.dataset.r);
@@ -744,6 +764,7 @@ firebase.initializeApp(firebaseConfig);DB=firebase.database();
 try{V.me=localStorage.getItem('halaqati_me_'+HID)||null;localStorage.setItem('halaqati_last',HID)}catch(e){}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 boot('<p class="muted">جارٍ تحميل الحلقة…</p>');
+DB.ref('photos/'+HID).on('value',snap=>{const v=snap.val()||{};PH=Object.entries(v).map(([id,p])=>({id,...p})).filter(p=>p&&p.d).sort((a,b)=>b.t-a.t);if(S){if(busy())PEND=true;else render()}});
 DB.ref('halaqat/'+HID).on('value',snap=>{const o=norm(snap.val());if(!o){S=null;setup();return}
 S=o;LAST=flat(S);if(V.me&&!stu(V.me))V.me=null;if(busy())PEND=true;else render()},err=>boot('<p style="font-weight:700">تعذّر الوصول إلى البيانات</p><p class="muted">تحقّقي من قواعد الأمان في Firebase.</p>'));
 }catch(e){boot('<p style="font-weight:700">لم تُضبط إعدادات Firebase بعد</p><p class="muted">ضع إعدادات المشروع في أعلى الملف (firebaseConfig).</p>')}
