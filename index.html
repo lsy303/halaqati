@@ -161,6 +161,9 @@ form{display:flex;flex-direction:column;gap:10px}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}.ph span{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:12px;font-weight:700;padding:14px 8px 6px;text-align:start}
 .phgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.phi{display:flex;flex-direction:column;gap:6px}.phi img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px}.phi input{padding:8px;font-size:14px}
 .lgact{display:flex;gap:4px;justify-content:flex-end;margin-top:4px}.lgact .btn{min-height:34px;padding:0 8px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pchip{border:2px solid var(--as);background:#fff;border-radius:12px;padding:4px 10px;min-height:40px;font-weight:700;font-size:14px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
+.pchip small{font-size:11px;color:var(--mut);font-weight:500}.pchip.on{border-color:var(--ad);background:var(--as)}
 .ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
@@ -557,27 +560,20 @@ ${ps.map(s=>`<tr>${nm(s)}${pd.map(d=>dots(s,s.plan,'p:',rowFor(s.plan,d))).join(
 </tbody></table></div></section>`:''}`;}
 if(V.ttab==='recite'){
 const rs=stu(V.rsid)||S.students[0];
-if(!rs)b='<p class="muted">أضيفي الطالبات من الإعدادات أولًا.</p>';else{V.rsid=rs.id;const pl=planOf(rs),TI=new Date().getDay(),HD=hDays(),isHD=HD.includes(TI);let LI=TI;if(!isHD){for(let q=1;q<=7;q++){const j=(TI-q+7)%7;if(HD.includes(j)&&pl.rows.some(x=>String(x.day).trim()===WDN[j])){LI=j;break}}}const WD=WDN[LI];
-let row=pl.rows.find(x=>x.id===V.rday)||pl.rows.find(x=>String(x.day).trim()===WD)||pl.rows[0];
-const gs=row?groups(pl).filter(g=>g.some(c=>c.k==='c')):[],dk=dkey();
-const doneToday=x=>{const all=[];plans(x).forEach(({pl:p,px})=>{const rw=p.rows.find(q=>String(q.day).trim()===WD);if(rw)groups(p).filter(g=>g.some(c=>c.k==='c')&&g.some(c=>c.k==='t')).forEach(g=>{const c=g.find(y=>y.k==='c');if(active(p,rw,c))all.push(px+rw.id+':'+c.id)})});return all.length&&all.every(k=>x.log.some(l=>l.k===k&&l.dk===dk))};
-b=`<section class="card"><h2 style="font-size:20px;margin-bottom:8px">تسميع اليوم</h2>
-<div class="schips">${S.students.map(x=>`<button class="schip ${x.id===rs.id?'on':''}" data-act="rsid" data-id="${x.id}">${av(x,36)}<span>${esc(x.name)}</span>${doneToday(x)?'<i class="okdot" aria-label="سُمِّعت اليوم"></i>':''}</button>`).join('')}</div>
-${isHD?'':`<div class="note" style="margin-top:10px;font-weight:700">اليوم (${WDN[TI]}) ليس من أيام الحلقة، ويُعرض آخر يوم حلقة: ${WD}</div>`}${pl.rows.length?`<div class="seg" style="margin-top:10px">${pl.rows.map(x=>`<button type="button" class="${x===row?'on':''}" data-act="rday" data-v="${x.id}">${esc(x.day)}${isHD&&String(x.day).trim()===WD?' (اليوم)':''}</button>`).join('')}</div>`:''}</section>
-${row?plans(rs).map(({pl,px},pi)=>{const rw=pi?rowFor(pl,row.day):row;if(!rw)return'';return groups(pl).filter(g=>g.some(c=>c.k==='c')&&g.some(c=>c.k==='t')).map(g=>{const c=g.find(y=>y.k==='c'),t=g.filter(y=>y.k==='t'),lbl=t.length?t[t.length-1].l:'التسميع',pt=t.map(y=>rw.c[y.id]||'').filter(Boolean).join(' ');
-if(!active(pl,rw,c))return'';const key=px+rw.id+':'+c.id,ex=rs.log.find(l=>l.k===key&&l.dk===dk),sn=t.map(y=>SURAHS.indexOf(String(rw.c[y.id]||'').trim())+1).find(v=>v>0);
-return`<section class="card rcard"><div class="hrow"><div><span class="tag" style="background:var(--mint);color:var(--mintd)">${esc(lbl)}</span>${pi?'<span class="tag" style="background:var(--as);color:var(--ad);margin-inline-start:4px">خطة خاصة</span>':''}<h3 style="font-size:20px;margin-top:6px">${esc(pt)}</h3></div>${ex?`<span class="tag" style="background:#FFF0C2;color:#7A4A00">سُجّل: ${esc(ex.r)}</span>`:''}</div>
-<form data-form="recite2" data-id="${rs.id}" data-k="${key}"><input type="hidden" name="pt" value="${esc(pt)}"><input type="hidden" name="ty" value="${esc(lbl)}">
-<div class="rchips">${RATES.map(([rr,v])=>`<label><input type="radio" name="rate" value="${v}" ${ex?(ex.st===v?'checked':''):(v===3?'checked':'')}><span>${rr}<small>${v?n(v)+'★':'—'}</small></span></label>`).join('')}</div>
-<label>ملاحظة المعلمة<input name="note" value="${esc(ex&&ex.note||'')}" placeholder="مثال: أحسنتِ في المدود، راجعي الآية ٧"></label>
-${sn&&!rs.mem.includes(sn)&&!/مراجع/.test(lbl)?`<label class="chkl"><input type="checkbox" name="sur" value="${sn}">أتمّت حفظ سورة «${SURAHS[sn-1]}» كاملة (تتلوّن في قلبها)</label>`:''}
-<button class="btn">${ex?'تحديث التسميع':'حفظ التسميع'}</button></form></section>`}).join('')}).join(''):'<section class="card"><p class="muted" style="margin:0">لا توجد خطة لهذه الطالبة.</p></section>'}
-<details class="card colsbox" style="padding:0"><summary><b style="flex:1">تسميع خارج الخطة</b><span class="tag" style="background:var(--as);color:var(--ad)">فتح</span></summary><div class="colsin"><form data-form="recite"><label>الطالبة<select name="sid">${opts}</select></label>
-<div class="seg">${['حفظ','مراجعة'].map(t=>`<button type="button" class="${V.rtype===t?'on':''}" data-act="rtype" data-v="${t}">${t}</button>`).join('')}</div>
-<label>المقطع<input name="pt" placeholder="مثال: النبأ ١–١٠" required></label>
-<div class="seg">${RATES.map(([r,v])=>`<button type="button" class="${V.rate===v?'on':''}" data-act="rate" data-v="${v}">${r} (${n(v)}★)</button>`).join('')}</div>
-<label>هل أتمّت حفظ سورة كاملة؟ (تتلوّن في قلبها)<select name="sur"><option value="">لا</option>${SURAHS.map((x,i)=>`<option value="${i+1}">${n(i+1)}. ${x}</option>`).join('')}</select></label>
-<button class="btn">حفظ ومنح النجوم</button></form></div></details>`;}}
+if(!rs)b='<p class="muted">أضيفي الطالبات من الإعدادات أولًا.</p>';else{V.rsid=rs.id;const dk=dkey();
+const items=[];plans(rs).forEach(({pl})=>{const gs=groups(pl).filter(g=>g.some(c=>c.k==='t'));pl.rows.forEach(r=>gs.forEach(g=>{const t=g.filter(c=>c.k==='t'),v=t.map(c=>r.c[c.id]||'').filter(Boolean).join(' ').trim();if(v&&!items.some(x=>x.v===v))items.push({v,ty:t[t.length-1].l})}))});
+const todays=rs.log.map((l,i)=>[l,i]).filter(([l])=>l.dk===dk);
+b=`<section class="card"><h2 style="font-size:20px;margin-bottom:8px">التسميع</h2>
+<div class="schips">${S.students.map(x=>`<button class="schip ${x.id===rs.id?'on':''}" data-act="rsid" data-id="${x.id}">${av(x,36)}<span>${esc(x.name)}</span>${x.log.some(l=>l.dk===dk)?'<i class="okdot" aria-label="سُمِّعت اليوم"></i>':''}</button>`).join('')}</div></section>
+<section class="card rcard"><form data-form="recite3" data-id="${rs.id}"><input type="hidden" name="ty" id="rTy" value="تسميع">
+<label>السورة أو المقطع<input name="pt" id="rPt" list="surahList" autocomplete="off" required placeholder="اكتبي اسم السورة، مثل: الملك ١–١٠"></label>
+<datalist id="surahList">${SURAHS.map(x=>`<option value="${x}">`).join('')}</datalist>
+${items.length?`<div><span class="muted" style="font-size:13px;font-weight:700">من الخطة:</span><div class="pchips">${items.map(x=>`<button type="button" class="pchip" data-act="pick-pt" data-v="${esc(x.v)}" data-ty="${esc(x.ty)}"><small>${esc(x.ty)}</small>${esc(x.v)}</button>`).join('')}</div></div>`:''}
+<div class="rchips">${RATES.map(([rr,v])=>`<label><input type="radio" name="rate" value="${v}" ${v===3?'checked':''}><span>${rr}<small>${v?n(v)+'★':'—'}</small></span></label>`).join('')}</div>
+<label>ملاحظة (اختياري)<input name="note" placeholder="مثال: أحسنتِ، راجعي المدود"></label>
+<label class="chkl"><input type="checkbox" name="full" value="1">أتمّت حفظ السورة كاملة (تتلوّن في قلبها)</label>
+<button class="btn">حفظ التسميع لـ${esc(rs.name)}</button></form></section>
+${todays.length?`<section class="card"><div class="ttl"><h2>تسميع ${esc(rs.name)} اليوم</h2><span>${n(todays.length)}</span></div><table class="tbl">${todays.reverse().map(([l,li])=>`<tr><td>${esc(l.pt)}${l.note?`<br><span style="color:var(--ad);font-weight:700">${esc(l.note)}</span>`:''}</td><td>${esc(l.r)} · ${n(l.st)}★<div class="lgact"><button class="btn ghost sm" data-act="log-edit" data-id="${rs.id}" data-i="${li}" aria-label="تعديل">${I('M4 20h4L19 9l-4-4L4 16zM14 6l4 4',15)}</button><button class="btn ghost sm" data-act="log-del" data-id="${rs.id}" data-i="${li}" aria-label="حذف">${I(P.x,15)}</button></div></td></tr>`).join('')}</table></section>`:''}`;}}
 if(V.ttab==='plan'){
 const tgt=V.pfor==='all'?null:stu(V.pfor),pl=tgt?tgt.plan:S.plan;
 const sel=`<label>الخطة المعروضة<select data-ed="pfor"><option value="all" ${V.pfor==='all'?'selected':''}>خطة الحلقة (لجميع الطالبات)</option>${S.students.map(s=>`<option value="${s.id}" ${V.pfor===s.id?'selected':''}>${esc(s.name)}${s.plan?' — خطة خاصة':''}</option>`).join('')}</select></label>`;
@@ -669,6 +665,7 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan={title:'خطة '+t.name+' الخاصة',cols:defCols(),rows:hDays().map(i=>({id:uid(),day:WDN[i],c:{}}))};save();toast('أُنشئت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+'pick-pt'(){const p=document.getElementById('rPt'),t=document.getElementById('rTy');if(p)p.value=b.dataset.v;if(t)t.value=b.dataset.ty||'تسميع';document.querySelectorAll('.pchip').forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'log-edit'(){const i=+b.dataset.i,l=s.log[i];if(!l)return 'keep';modal(`<h2 style="font-size:22px">تعديل التسميع</h2><form data-form="logedit" data-id="${s.id}" data-i="${i}"><label>النوع<input name="ty" value="${esc(l.ty)}" required></label><label>المقطع<input name="pt" value="${esc(l.pt)}" required></label>
 <div class="rchips">${RATES.map(([rr,v])=>`<label><input type="radio" name="rate" value="${v}" ${l.st===v?'checked':''}><span>${rr}<small>${v?n(v)+'★':'—'}</small></span></label>`).join('')}</div>
 <label>ملاحظة المعلمة<input name="note" value="${esc(l.note||'')}"></label><button class="btn">حفظ التعديل</button></form><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
@@ -749,6 +746,10 @@ x.name=nm;x.code=cd;try{if(localStorage.getItem('halaqati_me_'+HID)===x.id&&V.me
 gate(){if(String(d.g||'').trim()===String(S.set.gate||'').trim()){try{localStorage.setItem('halaqati_gate_'+HID,String(S.set.gate).trim())}catch(e){}render();toast('أهلًا بكِ')}else toast('الرمز غير صحيح');return 'skip'},
 gateset(){const v=String(d.gate||'').trim();S.set.gate=v;try{if(v)localStorage.setItem('halaqati_gate_'+HID,v)}catch(e){}toast(v?'فُعّل رمز الحلقة':'أُلغي رمز الحلقة')},
 logedit(){const x=stu(f.dataset.id),l=x&&x.log[+f.dataset.i];if(!l){closeM();return 'skip'}const v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0];if(rr[1]!==l.st)addStars(x,rr[1]-l.st);Object.assign(l,{ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||''});closeM();toast('حُفظ التعديل')},
+recite3(){const x=stu(f.dataset.id),v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0],pt=String(d.pt||'').trim();if(!pt){toast('اكتبي اسم السورة');return 'skip'}
+x.log.push({ty:d.ty||'تسميع',pt,r:rr[0],st:rr[1],note:d.note||'',d:today(),dk:dkey()});addStars(x,rr[1]);
+let msg='سُجّل التسميع لـ'+x.name+' (+'+n(rr[1])+'★)';if(d.full){const sn=SURAHS.map((nm,i)=>[nm,i+1]).filter(([nm])=>pt===nm||pt.startsWith(nm+' ')||pt.startsWith('سورة '+nm)).sort((a,c)=>c[0].length-a[0].length)[0];
+if(sn){if(!x.mem.includes(sn[1]))x.mem.push(sn[1]);msg='تلوّنت سورة '+sn[0]+' في قلب '+x.name}else msg+=' — لم يُتعرّف على اسم السورة لتلوينها'}toast(msg)},
 stucode(){const x=stu(f.dataset.id);if(d.code===x.code){V.me=x.id;try{localStorage.setItem('halaqati_me_'+HID,x.id)}catch(e){}closeM();toast('أهلًا '+x.name);const t=V.after;V.after=null;render();if(t)t();return 'skip'}toast('الرمز غير صحيح');return 'skip'},
 recite2(){const x=stu(f.dataset.id),k=f.dataset.k,v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0],dk=dkey(),ex=x.log.find(l=>l.k===k&&l.dk===dk);
 if(ex){addStars(x,rr[1]-ex.st);Object.assign(ex,{r:rr[0],st:rr[1],note:d.note||''})}else{x.log.push({ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||'',d:today(),dk,k});addStars(x,rr[1])}
