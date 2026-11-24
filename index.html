@@ -141,6 +141,15 @@ form{display:flex;flex-direction:column;gap:10px}
 .ptype span{display:flex;flex-direction:column;align-items:center;gap:2px;border:2.5px solid var(--as);border-radius:16px;padding:6px;background:#F3FAFF;cursor:pointer}
 .ptype input:checked+span{border-color:var(--ad);box-shadow:0 0 0 2px var(--ad)}.ptype input:focus-visible+span{outline:3px solid var(--ad)}
 .gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.galc{display:flex;flex-direction:column;gap:2px;text-align:center}.galc b{font-size:14px}.galc .muted{font-size:12px}
+.schips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.schip{flex:none;position:relative;border:2.5px solid transparent;background:var(--bg);border-radius:16px;padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;font-weight:700;font-size:13px}
+.schip.on{border-color:var(--ad);background:#fff}.okdot{position:absolute;top:4px;left:4px;width:12px;height:12px;border-radius:50%;background:var(--mintd);border:2px solid #fff}
+.rchips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}
+.rchips label{display:block}.rchips input{position:absolute;opacity:0;width:1px;height:1px}
+.rchips span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;border:2px solid var(--as);border-radius:14px;background:#fff;font-size:13px;text-align:center;cursor:pointer;padding:4px}
+.rchips small{font-size:12px;color:var(--mut)}
+.rchips input:checked+span{background:var(--ad);border-color:var(--ad);color:#fff}.rchips input:checked+span small{color:#fff}.rchips input:focus-visible+span{outline:3px solid var(--ad)}
+.chkl{flex-direction:row;align-items:center;gap:8px;font-weight:700;margin-bottom:8px}.chkl input{width:22px;height:22px;flex:none}
 .ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gcard{border:0;background:var(--bg);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
 .gcard b{font-size:14px}.gcard .muted{font-size:12px}
@@ -251,6 +260,8 @@ mosque:{n:'مسجد',def:'مسجد حلقتنا',st:['الأساس','الجدر�
 library:{f:1,n:'مكتبة',def:'مكتبة الحلقة',st:['الأرضية','الرفوف','الكتب','المصابيح','السجادة','اللوحة'],verb:'تُجهَّز المكتبة'},
 garden:{n:'بستان',def:'بستان الحلقة',st:['التربة','البذور','الشجيرات','الأزهار','النخيل','النافورة'],verb:'يُزرع البستان'},
 school:{f:1,n:'دار تحفيظ',def:'دار التحفيظ',st:['الأساس','الفصول','السبورة','المصاحف','اللافتة','الساحة'],verb:'تُبنى دار التحفيظ'}};
+const WDN=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const hDays=()=>{const a=arr(S.set.days);return a.length?a.map(Number):[0,1,2,3,4]};
 const FR=[.09,.22,.38,.56,.76,1];
 const bGoal=()=>Math.max(6,+S.build.goal||450);
 const bStages=()=>{const p=PROJ[S.build.type]||PROJ.mosque,g=bGoal();return p.st.map((x,i)=>[x,Math.round(g*FR[i])])};
@@ -485,7 +496,7 @@ ${s.notes.length?`<section class="list"><h2 style="font-size:18px">رسائل م
 ${planTable(s,planOf(s),true)}
 <div class="legend"><span><i></i>لم يتم</span><span><i style="background:var(--mintd);border-color:var(--mintd)"></i>تمّ (+١ نجمة)</span></div>
 <p class="muted" style="margin:8px 0 0">${mine?'اضغطي على مربع «التمام» عند الإنجاز، وتظهر متابعتكِ عند المعلمة.':'لتسجيل الإنجاز اضغطي «أنا '+esc(s.name)+'» وأدخلي رمزكِ.'}</p></section>
-<section class="card"><div class="ttl"><h2>سجل التسميع</h2></div>${s.log.length?`<table class="tbl">${s.log.slice().reverse().map(l=>`<tr><td>${esc(l.ty)}: ${esc(l.pt)}<br><span class="muted">${esc(l.d)}</span></td><td>${esc(l.r)} · ${n(l.st)}★</td></tr>`).join('')}</table>`:'<p class="muted" style="margin:0">لا يوجد تسميع بعد.</p>'}</section>
+<section class="card"><div class="ttl"><h2>سجل التسميع</h2></div>${s.log.length?`<table class="tbl">${s.log.slice().reverse().map(l=>`<tr><td>${esc(l.ty)}: ${esc(l.pt)}${l.note?`<br><span style="color:var(--ad);font-weight:700">${esc(l.note)}</span>`:''}<br><span class="muted">${esc(l.d)}</span></td><td>${esc(l.r)} · ${n(l.st)}★</td></tr>`).join('')}</table>`:'<p class="muted" style="margin:0">لا يوجد تسميع بعد.</p>'}</section>
 <section class="card"><div class="ttl"><h2>قرآني في قلبي</h2><span>${n(s.mem.length)} من ١١٤ سورة</span></div>
 <div class="bar" style="background:var(--as);margin-bottom:10px"><div style="width:${(s.mem.length/114*100).toFixed(1)}%;background:var(--ad)"></div></div>
 ${s.mem.length===114?'<div class="note" style="text-align:center;font-weight:700;margin-bottom:8px">ما شاء الله! اكتمل قلبكِ بالقرآن كاملًا</div>':''}
@@ -515,12 +526,29 @@ b=`<section class="card"><div class="ttl"><h2>إنجاز الحلقة</h2><span>
 <div class="scroll"><table class="pt mx"><thead><tr><th style="text-align:start">الطالبة</th>${Array.from({length:maxR},(_,i)=>`<th>${esc(days[i]||'يوم '+n(i+1))}</th>`).join('')}<th>المجموع</th></tr></thead><tbody>
 ${S.students.map(s=>{const x=slots(s),d=x.filter(y=>y.v==='ok').length;return`<tr><th style="text-align:start"><button class="nmb" data-act="open" data-id="${s.id}">${av(s,26)}${esc(s.name)}${s.plan?'<span class="tag" style="background:var(--as);color:var(--ad)">خاصة</span>':''}</button></th>${Array.from({length:maxR},(_,i)=>cell(s,i)).join('')}<td style="font-weight:700;color:${d===x.length&&x.length?'var(--mintd)':'var(--ink)'}">${n(d)}/${n(x.length)}</td></tr>`}).join('')}
 </tbody></table></div><p class="muted" style="margin:8px 0 0">تُحدَّث تلقائيًا عند وضع الطالبة «التمام»، وكل تمام يمنحها نجمة.</p></section>`;}
-if(V.ttab==='recite')b=`<section class="card"><h2 style="font-size:20px;margin-bottom:10px">تسجيل تسميع</h2><form data-form="recite"><label>الطالبة<select name="sid">${opts}</select></label>
+if(V.ttab==='recite'){
+const rs=stu(V.rsid)||S.students[0];
+if(!rs)b='<p class="muted">أضيفي الطالبات من الإعدادات أولًا.</p>';else{V.rsid=rs.id;const pl=planOf(rs),TI=new Date().getDay(),HD=hDays(),isHD=HD.includes(TI);let LI=TI;if(!isHD){for(let q=1;q<=7;q++){const j=(TI-q+7)%7;if(HD.includes(j)&&pl.rows.some(x=>String(x.day).trim()===WDN[j])){LI=j;break}}}const WD=WDN[LI];
+let row=pl.rows.find(x=>x.id===V.rday)||pl.rows.find(x=>String(x.day).trim()===WD)||pl.rows[0];
+const gs=row?groups(pl).filter(g=>g.some(c=>c.k==='c')):[],dk=dkey();
+const doneToday=x=>{const p=planOf(x),rw=p.rows.find(q=>String(q.day).trim()===WD)||p.rows[0];return rw&&groups(p).filter(g=>g.some(c=>c.k==='c')).every(g=>{const c=g.find(y=>y.k==='c');return !active(p,rw,c)||x.log.some(l=>l.k===rw.id+':'+c.id&&l.dk===dk)})};
+b=`<section class="card"><h2 style="font-size:20px;margin-bottom:8px">تسميع اليوم</h2>
+<div class="schips">${S.students.map(x=>`<button class="schip ${x.id===rs.id?'on':''}" data-act="rsid" data-id="${x.id}">${av(x,36)}<span>${esc(x.name)}</span>${doneToday(x)?'<i class="okdot" aria-label="سُمِّعت اليوم"></i>':''}</button>`).join('')}</div>
+${isHD?'':`<div class="note" style="margin-top:10px;font-weight:700">اليوم (${WDN[TI]}) ليس من أيام الحلقة، ويُعرض آخر يوم حلقة: ${WD}</div>`}${pl.rows.length?`<div class="seg" style="margin-top:10px">${pl.rows.map(x=>`<button type="button" class="${x===row?'on':''}" data-act="rday" data-v="${x.id}">${esc(x.day)}${isHD&&String(x.day).trim()===WD?' (اليوم)':''}</button>`).join('')}</div>`:''}</section>
+${row?gs.map(g=>{const c=g.find(y=>y.k==='c'),t=g.filter(y=>y.k==='t'),lbl=t.length?t[t.length-1].l:'التسميع',pt=t.map(y=>row.c[y.id]||'').filter(Boolean).join(' ');
+if(!active(pl,row,c))return'';const key=row.id+':'+c.id,ex=rs.log.find(l=>l.k===key&&l.dk===dk),sn=t.map(y=>SURAHS.indexOf(String(row.c[y.id]||'').trim())+1).find(v=>v>0);
+return`<section class="card rcard"><div class="hrow"><div><span class="tag" style="background:var(--mint);color:var(--mintd)">${esc(lbl)}</span><h3 style="font-size:20px;margin-top:6px">${esc(pt)}</h3></div>${ex?`<span class="tag" style="background:#FFF0C2;color:#7A4A00">سُجّل: ${esc(ex.r)}</span>`:''}</div>
+<form data-form="recite2" data-id="${rs.id}" data-k="${key}"><input type="hidden" name="pt" value="${esc(pt)}"><input type="hidden" name="ty" value="${esc(lbl)}">
+<div class="rchips">${RATES.map(([rr,v])=>`<label><input type="radio" name="rate" value="${v}" ${ex?(ex.st===v?'checked':''):(v===3?'checked':'')}><span>${rr}<small>${v?n(v)+'★':'—'}</small></span></label>`).join('')}</div>
+<label>ملاحظة المعلمة<input name="note" value="${esc(ex&&ex.note||'')}" placeholder="مثال: أحسنتِ في المدود، راجعي الآية ٧"></label>
+${sn&&!rs.mem.includes(sn)&&!/مراجع/.test(lbl)?`<label class="chkl"><input type="checkbox" name="sur" value="${sn}">أتمّت حفظ سورة «${SURAHS[sn-1]}» كاملة (تتلوّن في قلبها)</label>`:''}
+<button class="btn">${ex?'تحديث التسميع':'حفظ التسميع'}</button></form></section>`}).join(''):'<section class="card"><p class="muted" style="margin:0">لا توجد خطة لهذه الطالبة.</p></section>'}
+<details class="card colsbox" style="padding:0"><summary><b style="flex:1">تسميع خارج الخطة</b><span class="tag" style="background:var(--as);color:var(--ad)">فتح</span></summary><div class="colsin"><form data-form="recite"><label>الطالبة<select name="sid">${opts}</select></label>
 <div class="seg">${['حفظ','مراجعة'].map(t=>`<button type="button" class="${V.rtype===t?'on':''}" data-act="rtype" data-v="${t}">${t}</button>`).join('')}</div>
 <label>المقطع<input name="pt" placeholder="مثال: النبأ ١–١٠" required></label>
 <div class="seg">${RATES.map(([r,v])=>`<button type="button" class="${V.rate===v?'on':''}" data-act="rate" data-v="${v}">${r} (${n(v)}★)</button>`).join('')}</div>
 <label>هل أتمّت حفظ سورة كاملة؟ (تتلوّن في قلبها)<select name="sur"><option value="">لا</option>${SURAHS.map((x,i)=>`<option value="${i+1}">${n(i+1)}. ${x}</option>`).join('')}</select></label>
-<button class="btn">حفظ ومنح النجوم</button></form></section>`;
+<button class="btn">حفظ ومنح النجوم</button></form></div></details>`;}}
 if(V.ttab==='plan'){
 const tgt=V.pfor==='all'?null:stu(V.pfor),pl=tgt?tgt.plan:S.plan;
 const sel=`<label>الخطة المعروضة<select data-ed="pfor"><option value="all" ${V.pfor==='all'?'selected':''}>خطة الحلقة (لجميع الطالبات)</option>${S.students.map(s=>`<option value="${s.id}" ${V.pfor===s.id?'selected':''}>${esc(s.name)}${s.plan?' — خطة خاصة':''}</option>`).join('')}</select></label>`;
@@ -530,7 +558,7 @@ else ed=`${tgt?`<button class="btn ghost sm" data-act="drop-plan">إلغاء ا�
 <label>عنوان الخطة<input data-ed="ptitle" value="${esc(pl.title)}"></label>
 <h3 style="font-size:17px;margin-top:6px">الأيام والمقاطع</h3>
 ${pl.rows.map(r=>`<div class="rowed"><div class="hrow"><input data-ed="row-day" data-r="${r.id}" value="${esc(r.day)}" aria-label="اليوم" style="font-weight:700"><button class="btn ghost sm" data-act="del-row" data-r="${r.id}" aria-label="حذف اليوم">${I(P.x,16)}</button></div><div class="cells">${pl.cols.filter(c=>c.k==='t').map(c=>`<input data-ed="cell" data-r="${r.id}" data-c="${c.id}" value="${esc(r.c[c.id]||'')}" placeholder="${esc(c.l)}" aria-label="${esc(c.l)}">`).join('')}</div></div>`).join('')}
-<button class="btn ghost" data-act="add-row">إضافة يوم</button>
+<div class="duo"><button class="btn ghost" data-act="add-row">إضافة يوم</button><button class="btn ghost" data-act="sync-days">مطابقة أيام الحلقة</button></div>
 <h3 style="font-size:17px;margin-top:6px">معاينة</h3><div id="pv">${planTable(null,pl,false)}</div>
 <details class="colsbox" ${V.colsOpen?'open':''}><summary><span style="flex:1"><b>أعمدة الجدول</b><br><span class="muted">${pl.cols.map(c=>c.k==='c'?'✓':esc(c.l)).join(' · ')}</span></span><span class="tag" style="background:var(--as);color:var(--ad)">تعديل</span></summary><div class="colsin"><p class="muted" style="margin:0">«نص» تكتبين فيه السورة أو المقطع، و«تمام» مربع تؤشّر عليه الطالبة. كل عمود «تمام» يخصّ الأعمدة التي قبله.</p>
 <div class="list">${pl.cols.map(c=>`<div class="ed"><input data-ed="col-l" data-c="${c.id}" value="${esc(c.l)}" aria-label="اسم العمود"><select data-ed="col-k" data-c="${c.id}" aria-label="نوع العمود"><option value="t" ${c.k==='t'?'selected':''}>نص</option><option value="c" ${c.k==='c'?'selected':''}>تمام</option></select><button class="btn ghost sm" data-act="del-col" data-c="${c.id}" aria-label="حذف العمود">${I(P.x,16)}</button></div>`).join('')}</div>
@@ -553,6 +581,7 @@ if(V.ttab==='set')b=`<section class="card"><div class="hrow"><div style="flex:1"
 <label class="upl" style="position:relative;margin-top:10px">${I(P.plus,18)}رفع صورة من الجهاز<input type="file" accept="image/*" id="logoFile"></label>
 ${(S.set.logo||{}).t==='img'?'<button class="btn ghost" style="width:100%;margin-top:8px" data-act="logo-del">إزالة الصورة</button>':''}</section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">لون التطبيق</h2><div class="grid5">${Object.entries(THEMES).map(([k,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><button class="sw ${S.set.theme===k?'on':''}" data-act="theme" data-v="${k}" style="background:${t[1]};width:100%" aria-label="${t[0]}"></button><span style="font-size:12px;font-weight:700">${t[0]}</span></div>`).join('')}</div></section>
+<section class="card"><h2 style="font-size:20px;margin-bottom:4px">أيام الحلقة</h2><p class="muted" style="margin:0 0 10px">الأيام التي يكون فيها تسميع، وتُستخدم في الخطة وتسميع اليوم.</p><div class="seg">${WDN.map((w,i)=>`<button type="button" class="${hDays().includes(i)?'on':''}" data-act="hday" data-v="${i}" aria-pressed="${hDays().includes(i)}">${w}</button>`).join('')}</div></section>
 <section class="card"><div class="hrow"><div style="flex:1"><h2 style="font-size:20px">تصفير النجوم</h2><p class="muted" style="margin:4px 0 0">لبداية فصل أو شهر جديد.</p></div><button class="btn ghost sm" data-act="reset-stars">تصفير</button></div></section>
 <section class="card"><h2 style="font-size:20px;margin-bottom:10px">الطالبات ورموزهنّ</h2><div class="list">${S.students.map(s=>`<div class="row" style="background:var(--bg);min-height:48px">${av(s,34)}<span class="nm">${esc(s.name)}</span><span class="tag" style="background:#fff">الرمز ${esc(s.code)}</span><button class="btn ghost sm" data-act="del-stu" data-id="${s.id}" aria-label="حذف الطالبة">${I(P.x,16)}</button></div>`).join('')}</div>
 <form data-form="addstu" style="margin-top:10px"><div class="duo"><label>اسم الطالبة<input name="name" required></label><label>رمزها<input name="code" inputmode="numeric" required></label></div><button class="btn ghost">إضافة طالبة</button></form></section>
@@ -604,8 +633,12 @@ rtype(){V.rtype=b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.to
 rate(){V.rate=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));return 'keep'},
 'own-plan'(){const t=stu(V.pfor);t.plan=JSON.parse(JSON.stringify(S.plan));save();toast('صُمّمت خطة خاصة لـ'+t.name)},
 zoom(){V.zoom=!V.zoom},
+hday(){const i=+b.dataset.v;let d=hDays();d=d.includes(i)?d.filter(x=>x!==i):[...d,i].sort((a,c)=>a-c);if(!d.length)return toast('اختاري يومًا واحدًا على الأقل');S.set.days=d;save()},
+'sync-days'(){const pl=tp(),have=new Set(pl.rows.map(x=>String(x.day).trim()));let k=0;hDays().forEach(i=>{if(!have.has(WDN[i])){pl.rows.push({id:uid(),day:WDN[i],c:{}});k++}});pl.rows.sort((a,c)=>{const x=WDN.indexOf(String(a.day).trim()),y=WDN.indexOf(String(c.day).trim());return(x<0?9:x)-(y<0?9:y)});save();toast(k?'أُضيفت '+n(k)+' أيام':'أيام الخطة مطابقة لأيام الحلقة')},
+rsid(){V.rsid=id;V.rday=null},
+rday(){V.rday=b.dataset.v},
 'reset-stars'(){modal(`<h2 style="font-size:22px">تصفير النجوم</h2><label>لمن؟<select id="rsWho"><option value="all">جميع الطالبات</option>${S.students.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
-<p class="muted" style="margin:0">تعود النجوم ورصيد اللعب إلى صفر، ويتغيّر ترتيب لوحة الشرف. أما الحدائق والقلب وسجل التسميع وبناء المسجد فتبقى كما هي.</p>
+<p class="muted" style="margin:0">تعود النجوم ورصيد اللعب إلى صفر، ويتغيّر ترتيب لوحة الشرف. أما الحدائق والقلب وسجل التسميع ومشروع الحلقة فتبقى كما هي.</p>
 <button class="btn" style="background:#B3261E" data-act="reset-stars-ok">نعم، صفّري النجوم</button><button class="btn ghost" data-act="close">إلغاء</button>`);return 'keep'},
 'reset-stars-ok'(){const w=(document.getElementById('rsWho')||{}).value||'all',list=w==='all'?S.students:S.students.filter(x=>x.id===w);
 list.forEach(x=>{x.stars=0;x.spent=0;RAW.push(['students/'+x.id+'/stars',0])});save();closeM();toast(w==='all'?'صُفّرت نجوم جميع الطالبات':'صُفّرت نجوم '+list[0].name)},
@@ -628,7 +661,7 @@ const el=document.getElementById('hinfo');if(el)el.textContent='سورة '+nm+(s
 'add-col'(){tp().cols.push({id:uid(),l:'عمود جديد',k:'t'});save()},
 'del-col'(){const pl=tp();if(pl.cols.length<2)return toast('يجب أن يبقى عمود واحد على الأقل');pl.cols=pl.cols.filter(c=>c.id!==b.dataset.c);save()},
 'def-cols'(){tp().cols=defCols();save();toast('استُعيد القالب الافتراضي')},
-'add-row'(){tp().rows.push({id:uid(),day:'يوم جديد',c:{}});save()},
+'add-row'(){const pl=tp(),have=new Set(pl.rows.map(x=>String(x.day).trim())),nx=hDays().map(i=>WDN[i]).find(w=>!have.has(w));pl.rows.push({id:uid(),day:nx||'يوم جديد',c:{}});save()},
 'del-row'(){const pl=tp();pl.rows=pl.rows.filter(r=>r.id!==b.dataset.r);save()},
 newweek(){S.students.forEach(x=>x.done={});save();toast('بدأ أسبوع جديد')},
 phrase(){const t=document.getElementById('noteT');if(t)t.value=S.phrases[+b.dataset.i];return 'keep'},
@@ -658,6 +691,9 @@ const h={
 tlogin(){if(d.pin===S.set.pin){V.teacher=true;V.ttab='prog'}else toast('الرمز غير صحيح')},
 create(){const o=blank(d);DB.ref('halaqat/'+HID).set(toDB(o)).then(()=>toast('أُنشئت الحلقة'));return 'skip'},
 stucode(){const x=stu(f.dataset.id);if(d.code===x.code){V.me=x.id;try{localStorage.setItem('halaqati_me_'+HID,x.id)}catch(e){}closeM();toast('أهلًا '+x.name);const t=V.after;V.after=null;render();if(t)t();return 'skip'}toast('الرمز غير صحيح');return 'skip'},
+recite2(){const x=stu(f.dataset.id),k=f.dataset.k,v=+d.rate,rr=RATES.find(q=>q[1]===v)||RATES[0],dk=dkey(),ex=x.log.find(l=>l.k===k&&l.dk===dk);
+if(ex){addStars(x,rr[1]-ex.st);Object.assign(ex,{r:rr[0],st:rr[1],note:d.note||''})}else{x.log.push({ty:d.ty,pt:d.pt,r:rr[0],st:rr[1],note:d.note||'',d:today(),dk,k});addStars(x,rr[1])}
+if(d.sur&&!x.mem.includes(+d.sur)){x.mem.push(+d.sur);toast('تلوّنت سورة '+SURAHS[d.sur-1]+' في قلب '+x.name)}else toast(ex?'حُدِّث التسميع':'سُجّل التسميع لـ'+x.name+' (+'+n(rr[1])+'★)')},
 recite(){const r=RATES.find(x=>x[1]===V.rate);s.log.push({ty:V.rtype,pt:d.pt,r:r[0],st:r[1],d:today()});addStars(s,r[1]);if(d.sur&&!s.mem.includes(+d.sur)){s.mem.push(+d.sur);toast(`تلوّنت سورة ${SURAHS[d.sur-1]} في قلب ${s.name}`)}else toast(`سُجّل التسميع لـ${s.name} (+${n(r[1])}★)`)},
 note(){const t={t:d.t,d:today()};(d.sid==='all'?S.students:[s]).forEach(x=>x.notes.push({...t}));toast('أُرسلت الرسالة')},
 addtk(){S.ticker.push(d.t)},
